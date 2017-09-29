@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\COM Implementation">
+      <UniqueIdentifier>{99b42579-bc66-4a27-93cf-2945e46333cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\COM Interfaces">
+      <UniqueIdentifier>{efa4961d-d3ed-4340-8eb5-6dd1672c096d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\COM Interfaces\IAcroAXDocShim">
+      <UniqueIdentifier>{c770f844-e608-44ae-8daf-21c56d72ec6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\COM Interfaces\IPDFiumControl">
+      <UniqueIdentifier>{b3336197-29bf-448d-958a-873cf524d8a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\COM Interfaces\Hosting MSHTML">
+      <UniqueIdentifier>{03206bea-5fba-46f0-b804-9e651971a3f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\COM Interfaces\Being Hosted">
+      <UniqueIdentifier>{f00b1017-79c1-4375-a554-7dda42d2e95e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\COM Interfaces\Hosting MSHTML\COM Events">
+      <UniqueIdentifier>{897a68b0-6f9f-4ebc-bb0c-13633c8a767c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\COM Interfaces\COM Events">
+      <UniqueIdentifier>{e519f1cf-20ac-4a6c-b6f7-f25d2c1d6af6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PDFiumControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="COM Interfaces\Being Hosted\OleObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="COM Implementation\dllMain.cpp">
+      <Filter>Source Files\COM Implementation</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\IUnknown.cpp">
+      <Filter>Source Files\COM Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\IAcroAXDocShim\IAcroAXDocShim_IDispatch.cpp">
+      <Filter>Source Files\COM Interfaces\IAcroAXDocShim</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\IAcroAXDocShim\IAcroAXDocShim.cpp">
+      <Filter>Source Files\COM Interfaces\IAcroAXDocShim</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\IPDFiumControl.cpp">
+      <Filter>Source Files\COM Interfaces\IPDFiumControl</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\IPDFiumDocument.cpp">
+      <Filter>Source Files\COM Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="PDFiumControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PDFiumDocument.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Hosting MSHTML\IOleClientSite.cpp">
+      <Filter>Source Files\COM Interfaces\Hosting MSHTML</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Hosting MSHTML\IOleDocumentSite.cpp">
+      <Filter>Source Files\COM Interfaces\Hosting MSHTML</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Hosting MSHTML\IOleInPlaceFrame.cpp">
+      <Filter>Source Files\COM Interfaces\Hosting MSHTML</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Hosting MSHTML\IOleInPlaceSite.cpp">
+      <Filter>Source Files\COM Interfaces\Hosting MSHTML</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IDataObject.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IOleControl.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IOleInPlaceActiveObject.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IOleInPlaceObject.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IOleObject.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IOleObject_IOleObject.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IOleObject_IUnknown.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IPersistStorage.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IPersistStreamInit.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IPropertyPage.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IProvideClassInfo.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IQuickActivate.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IRunnableObject.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\ISpecifyPropertyPages.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\IViewObject.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\initialize.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\siteHandler.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Hosting MSHTML\DWebBrowserEvents.cpp">
+      <Filter>Source Files\COM Interfaces\Hosting MSHTML\COM Events</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\COM Events\IConnectionPoint.cpp">
+      <Filter>Source Files\COM Interfaces\COM Events</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\COM Events\IConnectionPointContainer.cpp">
+      <Filter>Source Files\COM Interfaces\COM Events</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\COM Events\IEnumConnectionPoints.cpp">
+      <Filter>Source Files\COM Interfaces\COM Events</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\COM Events\IEnumerateConnections.cpp">
+      <Filter>Source Files\COM Interfaces\COM Events</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\IDispatch.cpp">
+      <Filter>Source Files\COM Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\propertiesHandler.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="calcDimensions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="htmlHeader.htm" />
+    <None Include="htmlPage.htm" />
+    <None Include="PDFiumControl.def">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="htmlFooter.htm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="COM Implementation\PDFiumControl.odl">
+      <Filter>Source Files\COM Implementation</Filter>
+    </Midl>
+    <Midl Include="COM Implementation\PDFiumControl_IAcroAXDocShim.odl">
+      <Filter>Source Files\COM Implementation</Filter>
+    </Midl>
+  </ItemGroup>
+</Project>

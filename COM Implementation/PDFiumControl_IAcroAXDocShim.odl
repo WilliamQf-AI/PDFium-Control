@@ -1,0 +1,119 @@
+
+import "ocidl.idl";
+
+#include <olectl.h>
+
+//
+//NTC: 09-07-2017: The following interface is intended to mimic the interface used to manage PDFs in a container
+// using the Adobe Reader. It is here only as a stub at this point.
+//
+// Someone could implement the interface members and therefore allow the use of this control in 
+// place of the woefully inadequate and under-documented Adobe Reader control.
+//
+// For reference, the interace ID for Adobe IAcroAXDocShim is:
+//    {3b813ce7-7c10-4f84-ad06-9df76d97a9aa}
+//
+// NOTE: I have already added support for the Adobe version of the interface ID in this object's IUnknown implementation(s).
+//
+// If the Adobe interface ID above is used (by the client of this object) instead of the one I have generated - the client would
+// recieve this interface, and their existing code written against the Adobe version WOULD work, again, IF the methods were implemented.
+//
+// The client would still have to instantiate THIS control object and query it for IAcroAXDocShim.
+//
+// If you really want to replace Adobe - change the CLSID of this object to:
+//
+//    {ca8a9780-280d-11cf-a24d-444553540000}
+//
+// then change the ID of this interface to that above, add the logic in dllMain.cpp (following the existing pattern) to
+// register the class object and type library. Note that this would essentially HIDE the adobe reader by using it's ids, a perfectly
+// legal operation - and in this case, justifiable.
+//
+// You would also need to change the class factory logic in dllMain to be able to handle two different CLSID values, nothing
+// else should need to change.
+//
+
+   [ uuid(B5FF6E92-F84E-432C-AACB-0982C940E53E),helpstring("InnoVisioNate PDFium Control - IAcroAXDocShim"), lcid(0x0),version(1.0)] 
+
+   library PDFiumControl_IAcroAXDocShim { 
+
+   importlib(STDOLE_TLB); 
+   importlib(STDTYPE_TLB);
+
+   [uuid(B5FF6E92-F84E-432C-AACB-0982C940E538),
+      helpstring("PDFium Control IAcroAXDocShim Interface"),
+      dual,oleautomation,nonextensible,pointer_default(unique)] 
+
+   interface IPDFiumControl_IAcroAXDocShim : IDispatch {
+
+      //__declspec(property(get=Getsrc,put=Putsrc)) BSTR src;
+      [propput] HRESULT src([in] BSTR sourceDocument);
+
+      [propget] HRESULT src([out,retval] BSTR *pSourceDocument);
+
+/*
+      __declspec(property(get=GetmessageHandler,put=PutmessageHandler)) VARIANT messageHandler;
+*/
+
+      VARIANT_BOOL LoadFile(BSTR fileName );
+
+      HRESULT setShowToolbar(VARIANT_BOOL On );
+
+      HRESULT gotoFirstPage ( );
+      HRESULT gotoLastPage ( );
+      HRESULT gotoNextPage ( );
+      HRESULT gotoPreviousPage ( );
+      HRESULT setCurrentPage (long n );
+
+      HRESULT goForwardStack ( );
+      HRESULT goBackwardStack ( );
+
+      HRESULT setPageMode (BSTR pageMode );
+      HRESULT setLayoutMode (BSTR layoutMode );
+
+      HRESULT setNamedDest (BSTR namedDest );
+
+      HRESULT Print ( );
+
+      HRESULT printWithDialog ( );
+
+      HRESULT setZoom (float percent );
+
+      HRESULT setZoomScroll (float percent,float left,float top );
+
+      HRESULT setView (BSTR viewMode );
+
+      HRESULT setViewScroll(BSTR viewMode,float offset );
+
+      HRESULT setViewRect (float left,float top,float width,float height );
+
+      HRESULT printPages (long from,long to );
+
+      HRESULT printPagesFit (long from,long to,VARIANT_BOOL shrinkToFit );
+
+      HRESULT printAll ( );
+
+      HRESULT printAllFit (VARIANT_BOOL shrinkToFit );
+
+      HRESULT setShowScrollbars (VARIANT_BOOL On );
+/*
+      VARIANT GetVersions ( );
+*/
+      HRESULT setCurrentHightlight (long a,long b,long c,long d );
+
+      HRESULT setCurrentHighlight (long a,long b,long c,long d );
+
+/*
+      HRESULT postMessage (const VARIANT & strArray );
+      VARIANT GetmessageHandler ( );
+      void PutmessageHandler (const VARIANT & pVarOut );
+*/
+
+   }
+
+   [uuid(B5FF6E92-F84E-432C-AACB-0982C940E539),
+      helpstring("PDFium Control Object's Adobe AcroAXDocShim clone")]
+      coclass PDFiumControl_IAcroAXDocShim {
+         [default] dispinterface IPDFiumControl_IAcroAXDocShim;
+   }
+
+   };

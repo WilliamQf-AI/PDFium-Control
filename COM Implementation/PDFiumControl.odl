@@ -1,0 +1,115 @@
+
+import "ocidl.idl";
+
+#include <olectl.h>
+
+[uuid(34A715A0-6587-11D0-924A-0020AFC7AC4D),
+   helpstring("MSHTML Events Interface"),
+   dual,oleautomation,nonextensible,pointer_default(unique)]
+interface PDFium_DWebBrowserEvents2 : IDispatch
+{
+}
+
+[ uuid(B5FF6E92-F84E-432C-AACB-0982C940E530),
+   helpfile("PDFiumControl.hlp"),
+   helpstring("InnoVisioNate PDFium Control"), 
+   lcid(0x0),version(1.0)] 
+
+library PDFiumControl { 
+
+   importlib(STDOLE_TLB); 
+   importlib(STDTYPE_TLB);
+
+   interface IPDFiumDocument;
+
+   [uuid(B5FF6E92-F84E-432C-AACB-0982C940E532),
+      helpstring("PDFium Control Interface")] 
+
+   interface IPDFiumControl : IDispatch {
+
+      [propput] HRESULT BackgroundColor([in] COLORREF backgroundColor);
+      [propget] HRESULT BackgroundColor([out,retval] COLORREF *pBackgroundColor);
+
+      [propput] HRESULT PDFWidth([in] long cxPDFWithInPixels);
+      [propget] HRESULT PDFWidth([out,retval] long *pcxPDFWidthInPixels);
+
+      [propput] HRESULT PDFHeight([in] long cxPDFHeightInPixels);
+      [propget] HRESULT PDFHeight([out,retval] long *pcxPDFHeightInPixels);
+
+      [propget] HRESULT PDFPagesVisible([out,retval] BSTR *pPagesVisible);
+
+      [propget] HRESULT PDFPageMostVisible([out,retval] long *pPageNumber);
+
+      [propget] HRESULT PDFPageXPixels([in] long pageNumber,[out,retval] long *pX);
+
+      [helpstring("Retrieve the x-location, in pixels, of the page wrt to the current viewing window. Returns -32768 if the page is not visible.")]
+      [propget] HRESULT PDFPageXPixelsInView([in] long pageNumber,[out,retval] long *pX);
+
+      [propget] HRESULT PDFPageYPixels([in] long pageNumber,[out,retval] long *pY);
+
+      [helpstring("Retrieve the y-location of the page wrt to the current viewing window. Returns -32768 if the page is not visible.")]
+      [propget] HRESULT PDFPageYPixelsInView([in] long pageNumber,[out,retval] long *pY);
+
+      [propget] HRESULT PDFPageWidthPixels([in] long pageNumber,[out,retval] long *pWidth);
+
+      [propget] HRESULT PDFPageHeightPixels([in] long pageNumber,[out,retval] long *pHeight);
+
+      [propget] HRESULT PDFPageXPoints([in] long pageNumber,[out,retval] long *pX);
+
+      [propget] HRESULT PDFPageYPoints([in] long pageNumber,[out,retval] long *pY);
+
+      [propget] HRESULT PDFPageWidthPoints([in] long pageNumber,[out,retval] long *pWidth);
+
+      [propget] HRESULT PDFPageHeightPoints([in] long pageNumber,[out,retval] long *pHeight);
+
+      [helpstring("Return the visible page number whose vertical dimension contains yValue. If the point is not on a page, look for the page under yValue + seekHeight.")]
+      [propget] HRESULT PDFPageNumberAtY([in] long yValue,[in] long seekHeight,[out,retval] long *pPageNumber);
+
+      [propput] HRESULT Document([in] BSTR fileName);
+      [propget] HRESULT Document([out,retval] BSTR *pFileName);
+
+      [propget] HRESULT IsPDF([out,retval] BOOL *);
+
+      [propput] HRESULT ScrollBarVisible([in] BOOL);
+      [propget] HRESULT ScrollBarVisible([out,retval] BOOL *);
+
+      HRESULT OpenDocument(BSTR documentFileName,GUID *pDocumentID);
+
+      HRESULT CloseDocument(GUID *pDocumentID);
+
+      [helpstring("Color, size, and pageNumber values are ignored for non-PDF documents")]
+      HRESULT DisplayDocument(COLORREF backgroundColor,long cxImagePixels,long cyImagePixels,BSTR pdfOrHTMLFileName,long pageNumber);
+
+      HRESULT GoToPage(long pageNumber);
+
+      HRESULT PrintCurrentDocument(BOOL showPrinterSelection);
+
+      HRESULT PrintDocument(BSTR pdfOrHTMLFileName,BOOL showPrinterSelection);
+
+      HRESULT Cleanup();
+
+   }
+
+   //
+   //NTC: 09-21-2017: I don't think there is any reason to expose this interface.
+   //
+/*
+   [uuid(B5FF6E92-F84E-432C-AACB-0982C940E533),
+      helpstring("PDFium Document Interface")] 
+
+   interface IPDFiumDocument : IUnknown {
+
+      [helpstring("Pass non-NULL pointers to get PDFWidth and PDFHeight - However, the result will be that of the last page in the document")]
+      HRESULT GenerateHTML(COLORREF backgroundColor,long cxImagePixels,long cyImagePixels,BSTR htmlFileName,long *pPageCount,long *pPDFWidth,long *pPDFHeight);
+
+   }
+*/
+
+   [uuid(B5FF6E92-F84E-432C-AACB-0982C940E53F),
+      helpstring("PDFium Control Object")]
+      coclass PDFiumControl {
+         [default] dispinterface IPDFiumControl;
+         [source] dispinterface PDFium_DWebBrowserEvents2;
+   }
+
+};
