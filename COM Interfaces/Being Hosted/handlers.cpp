@@ -1,6 +1,8 @@
 
 #include "PDFiumControl.h"
 
+#include <windowsx.h>
+
    LRESULT CALLBACK PDFiumControl::siteHandler(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam) {
 
    PDFiumControl *p = (PDFiumControl *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
@@ -27,8 +29,8 @@
       p -> rcHTMLHost.left = 0;
       p -> rcHTMLHost.right = LOWORD(lParam);
       p -> rcHTMLHost.bottom = HIWORD(lParam);
-      if ( p -> pIOleInPlaceObject_HTML ) 
-         p -> pIOleInPlaceObject_HTML -> SetObjectRects(&p -> rcHTMLHost,&p -> rcHTMLHost);
+      if ( p -> pIOleInPlaceObject_MSHTML ) 
+         p -> pIOleInPlaceObject_MSHTML -> SetObjectRects(&p -> rcHTMLHost,&p -> rcHTMLHost);
       p -> calcDimensions();
       break;
 
@@ -51,4 +53,39 @@
    }
 
    return DefWindowProc(hwnd,msg,wParam,lParam);
+   }
+
+
+   LRESULT CALLBACK PDFiumControl::explorerHandler(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam) {
+
+   if ( WM_MOUSEFIRST <= msg && WM_MOUSELAST >= msg ) {
+      PDFiumControl *p = explorerObjectMap[hwnd];
+      if ( p ) {
+
+         POINT ptlTranslate{0,0};
+
+         RECT rcWindow;
+         GetWindowRect(p -> hwndExplorer,&rcWindow);
+
+         ptlTranslate.x = GET_X_LPARAM(lParam);
+         ptlTranslate.y = GET_Y_LPARAM(lParam);
+
+         ClientToScreen(hwnd,&ptlTranslate);
+
+         ptlTranslate.x -= rcWindow.left;
+         ptlTranslate.y -= rcWindow.top;
+
+         p -> connectionPointContainer.fire_MouseMessage(msg,wParam,MAKELPARAM(ptlTranslate.x,ptlTranslate.y));
+
+         if ( WM_RBUTTONDOWN <= msg && WM_RBUTTONDBLCLK >= msg ) {
+            if ( ! p -> enableExplorerContextMenu )
+               return (LRESULT)FALSE;
+         }
+      }
+   }
+
+   if ( WM_DESTROY == msg )
+      explorerObjectMap.erase(hwnd);
+
+   return nativeExplorerHandler(hwnd,msg,wParam,lParam);
    }

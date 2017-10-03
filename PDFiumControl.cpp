@@ -3,14 +3,15 @@
 
    long PDFiumControl::countInstances = 0;
    FPDF_LIBRARY_CONFIG PDFiumControl::pdfiumConfig = {0};
-
-   //std::list<PDFiumControl::PDFiumDocument *> PDFiumControl::openedDocuments;
+   std::map<HWND,PDFiumControl *> PDFiumControl::explorerObjectMap;
+   WNDPROC PDFiumControl::nativeExplorerHandler = NULL;
 
    PDFiumControl::PDFiumControl(IUnknown *pUnkOuter) :
 
       connectionPointContainer(this),
       connectionPoint_IPropertyNotifySink(this,IID_IPropertyNotifySink),
       connectionPoint_DWebBrowserEvents2(this,DIID_DWebBrowserEvents2),
+      connectionPoint_IPDFiumControlEvents(this,IID_IPDFiumControlEvents),
 
       openedDocuments(),
 
@@ -63,6 +64,21 @@
    countInstances--;
 
    Cleanup();
+
+   if ( pIElementBehaviorFactory )
+      delete pIElementBehaviorFactory;
+
+   pIElementBehaviorFactory = NULL;
+
+   if ( pIElementBehavior )
+      delete pIElementBehavior;
+
+   pIElementBehavior = NULL;
+
+   if ( pIHTMLPainter )
+      delete pIHTMLPainter;
+   
+   pIHTMLPainter = NULL;
 
    if ( pIHTMLBodyElement )
       pIHTMLBodyElement -> Release();
@@ -124,11 +140,11 @@
 
    pIWebBrowser -> put_RegisterAsDropTarget(TRUE);
 
-   pIWebBrowser -> QueryInterface(IID_IOleObject,reinterpret_cast<void **>(&pIOleObject_HTML));
+   pIWebBrowser -> QueryInterface(IID_IOleObject,reinterpret_cast<void **>(&pIOleObject_MSHTML));
 
-   pIOleObject_HTML -> QueryInterface(IID_IOleInPlaceObject,reinterpret_cast<void **>(&pIOleInPlaceObject_HTML));
+   pIOleObject_MSHTML -> QueryInterface(IID_IOleInPlaceObject,reinterpret_cast<void **>(&pIOleInPlaceObject_MSHTML));
 
-   pIOleObject_HTML -> SetClientSite(pIOleClientSite_HTML_Host);
+   pIOleObject_MSHTML -> SetClientSite(pIOleClientSite_HTML_Host);
 
    pDWebBrowserEvents_HTML_Host = new _DWebBrowserEvents2(this);
 
@@ -231,32 +247,4 @@
    delete [] pBits;
 
    return;
-   }
-
-
-   int pixelsToHiMetric(SIZEL *pPixels,SIZEL *phiMetric) {
-   HDC hdc = GetDC(0);
-   int pxlsX,pxlsY;
- 
-   pxlsX = GetDeviceCaps(hdc,LOGPIXELSX);
-   pxlsY = GetDeviceCaps(hdc,LOGPIXELSY);
-   ReleaseDC(0,hdc);
- 
-   phiMetric -> cx = PIXELS_TO_HIMETRIC(pPixels -> cx,pxlsX);
-   phiMetric -> cy = PIXELS_TO_HIMETRIC(pPixels -> cy,pxlsY);
-   return TRUE;
-   }
-
-   int hiMetricToPixel(SIZEL *phiMetric,SIZEL *pPixels) {
-   HDC hdc = GetDC(0);
-   int pxlsX,pxlsY;
-
-   pxlsX = GetDeviceCaps(hdc,LOGPIXELSX);
-   pxlsY = GetDeviceCaps(hdc,LOGPIXELSY);
-   ReleaseDC(0,hdc);
-
-   pPixels -> cx = HIMETRIC_TO_PIXELS(phiMetric -> cx,pxlsX);
-   pPixels -> cy = HIMETRIC_TO_PIXELS(phiMetric -> cy,pxlsY);
-
-   return TRUE;
    }

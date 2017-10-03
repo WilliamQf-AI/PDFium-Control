@@ -134,9 +134,6 @@
     <ClCompile Include="COM Interfaces\Being Hosted\initialize.cpp">
       <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
     </ClCompile>
-    <ClCompile Include="COM Interfaces\Being Hosted\siteHandler.cpp">
-      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
-    </ClCompile>
     <ClCompile Include="COM Interfaces\Hosting MSHTML\DWebBrowserEvents.cpp">
       <Filter>Source Files\COM Interfaces\Hosting MSHTML\COM Events</Filter>
     </ClCompile>
@@ -160,6 +157,21 @@
     </ClCompile>
     <ClCompile Include="calcDimensions.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\source\utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Being Hosted\handlers.cpp">
+      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Hosting MSHTML\IElementBehaviorFactory.cpp">
+      <Filter>Source Files\COM Interfaces\Hosting MSHTML</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Hosting MSHTML\IElementBehavior.cpp">
+      <Filter>Source Files\COM Interfaces\Hosting MSHTML</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\Hosting MSHTML\IHTMLPainter.cpp">
+      <Filter>Source Files\COM Interfaces\Hosting MSHTML</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

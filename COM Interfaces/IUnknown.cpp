@@ -41,6 +41,18 @@
       return pDWebBrowserEvents_HTML_Host -> QueryInterface(riid,ppv);
    else
 
+   if ( IID_IElementBehaviorFactory == riid )
+      return pIElementBehaviorFactory -> QueryInterface(riid,ppv);
+   else
+
+   if ( IID_IElementBehavior == riid )
+      return pIElementBehavior -> QueryInterface(riid,ppv);
+   else
+
+   if ( IID_IHTMLPainter == riid ) 
+      return pIHTMLPainter -> QueryInterface(riid,ppv);
+   else
+
    //
    // Mimicking the Adobe Reader interface
    //

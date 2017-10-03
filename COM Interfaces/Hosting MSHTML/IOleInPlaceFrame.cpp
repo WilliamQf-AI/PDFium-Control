@@ -59,15 +59,15 @@
 
    HRESULT PDFiumControl::_IOleInPlaceFrame::SetActiveObject(IOleInPlaceActiveObject *pObj,LPCOLESTR) {
 
-   if ( pParent -> pIOleInPlaceActiveObject_HTML )
-      pParent -> pIOleInPlaceActiveObject_HTML -> Release();
+   if ( pParent -> pIOleInPlaceActiveObject_MSHTML )
+      pParent -> pIOleInPlaceActiveObject_MSHTML -> Release();
 
-   pParent -> pIOleInPlaceActiveObject_HTML = NULL;
+   pParent -> pIOleInPlaceActiveObject_MSHTML = NULL;
 
-   pParent -> pIOleInPlaceActiveObject_HTML = pObj;
+   pParent -> pIOleInPlaceActiveObject_MSHTML = pObj;
 
    if ( pObj )
-      pParent -> pIOleInPlaceActiveObject_HTML -> AddRef();
+      pParent -> pIOleInPlaceActiveObject_MSHTML -> AddRef();
 
    return S_OK;
    }

@@ -29,7 +29,7 @@
 
    STDMETHODIMP PDFiumControl::_IConnectionPointContainer::EnumConnectionPoints(IEnumConnectionPoints **ppEnum) {
 
-   _IConnectionPoint *pConnectionPoints[2];
+   _IConnectionPoint *pConnectionPoints[3];
 
    *ppEnum = NULL;
  
@@ -39,6 +39,8 @@
    pConnectionPoints[0] = &pParent -> connectionPoint_IPropertyNotifySink;
 
    pConnectionPoints[1] = &pParent -> connectionPoint_DWebBrowserEvents2;
+
+   pConnectionPoints[2] = &pParent -> connectionPoint_IPDFiumControlEvents;
 
    pParent -> pEnumConnectionPoints = new _IEnumConnectionPoints(pParent,pConnectionPoints,2);
  
@@ -59,6 +61,12 @@
    if ( DIID_DWebBrowserEvents2 == riid ) {
       *ppCP = static_cast<IConnectionPoint *>(&pParent -> connectionPoint_DWebBrowserEvents2);
       pParent -> connectionPoint_DWebBrowserEvents2.AddRef();
+      return S_OK;
+   }
+
+   if ( IID_IPDFiumControlEvents == riid ) {
+      *ppCP = static_cast<IConnectionPoint *>(&pParent -> connectionPoint_IPDFiumControlEvents);
+      pParent -> connectionPoint_IPDFiumControlEvents.AddRef();
       return S_OK;
    }
 
@@ -92,6 +100,50 @@
       if ( pIEnum -> Next(1, &connectData, NULL) ) break;
       DWebBrowserEvents2 *pClient = reinterpret_cast<DWebBrowserEvents2 *>(connectData.pUnk);
       pClient -> Invoke(dispidMember,riid,lcid,wFlags,pDispParams,pvarResult,pexcepinfo,puArgErr);
+   }
+   static_cast<IUnknown*>(pIEnum) -> Release();
+   return;
+   }
+
+   // IPDFiumControlEvents
+
+   void PDFiumControl::_IConnectionPointContainer::fire_MouseMessage(UINT msg,WPARAM wParam,LPARAM lParam) {
+   IEnumConnections* pIEnum = NULL;
+   CONNECTDATA connectData;
+   pParent -> connectionPoint_IPDFiumControlEvents.EnumConnections(&pIEnum);
+   if ( ! pIEnum ) return;
+   while ( 1 ) {
+      if ( pIEnum -> Next(1, &connectData, NULL) ) break;
+      IPDFiumControlEvents *pClient = reinterpret_cast<IPDFiumControlEvents *>(connectData.pUnk);
+      pClient -> MouseMessage(msg,wParam,lParam);
+   }
+   static_cast<IUnknown*>(pIEnum) -> Release();
+   return;
+   }
+
+   void PDFiumControl::_IConnectionPointContainer::fire_Size(SIZE *pSize) {
+   IEnumConnections* pIEnum = NULL;
+   CONNECTDATA connectData;
+   pParent -> connectionPoint_IPDFiumControlEvents.EnumConnections(&pIEnum);
+   if ( ! pIEnum ) return;
+   while ( 1 ) {
+      if ( pIEnum -> Next(1, &connectData, NULL) ) break;
+      IPDFiumControlEvents *pClient = reinterpret_cast<IPDFiumControlEvents *>(connectData.pUnk);
+      pClient -> Size(pSize);
+   }
+   static_cast<IUnknown*>(pIEnum) -> Release();
+   return;
+   }
+
+   void PDFiumControl::_IConnectionPointContainer::fire_Paint(HDC hdc,RECT *prcUpdate) {
+   IEnumConnections* pIEnum = NULL;
+   CONNECTDATA connectData;
+   pParent -> connectionPoint_IPDFiumControlEvents.EnumConnections(&pIEnum);
+   if ( ! pIEnum ) return;
+   while ( 1 ) {
+      if ( pIEnum -> Next(1, &connectData, NULL) ) break;
+      IPDFiumControlEvents *pClient = reinterpret_cast<IPDFiumControlEvents *>(connectData.pUnk);
+      pClient -> Paint(hdc,prcUpdate);
    }
    static_cast<IUnknown*>(pIEnum) -> Release();
    return;

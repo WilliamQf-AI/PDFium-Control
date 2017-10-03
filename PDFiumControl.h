@@ -14,6 +14,8 @@
 
 #include "resource.h"
 
+#include "utilities.h"
+
 #include "pdfium\fpdfview.h"
 
 #include "PDFiumControl_i.h"
@@ -67,6 +69,8 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
       STDMETHOD(put_PDFHeight)(long cyPDFHeight);
       STDMETHOD(get_PDFHeight)(long *pcyPDFHeight);
 
+      STDMETHOD(put_EnableExplorerContextMenu)(BOOL doEnable);
+
       STDMETHOD(get_PDFPagesVisible)(BSTR *pPagesVisible);
 
       STDMETHOD(get_PDFPageMostVisible)(long *pPageNumber);
@@ -101,6 +105,8 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
       STDMETHOD(put_ScrollBarVisible)(BOOL);
 
       STDMETHOD(get_ScrollBarVisible)(BOOL *);
+
+      STDMETHOD(ConvertPointsToScrollPanePixels)(long pageNumber,RECT *pRect);
 
       STDMETHOD(OpenDocument)(BSTR pdfFileName,GUID *pIPDFiumDocumentId);
 
@@ -170,6 +176,9 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
          STDMETHOD(put_PDFPageHeightPoints)(long pageNumber,long cy);
 
          GUID *GetId() { return &id; };
+
+         STDMETHOD(ConvertPointsToScrollPanePixels)(long pageNumber,RECT *pRect);
+
 
       private:
    
@@ -289,6 +298,14 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
 
          void fire_PropertyChanged();
 
+         // IPDFiumControlEvents
+
+         void fire_MouseMessage(UINT msg,WPARAM wParam,LPARAM lParam);
+
+         void fire_Size(SIZE *pSize);
+
+         void fire_Paint(HDC hdc,RECT *pRcUpdate);
+
          // DWebBrowserEvents2
 
          void fire_Invoke(DISPID dispidMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pdispparams, VARIANT *pvarResult, EXCEPINFO *pexcepinfo, UINT *puArgErr);
@@ -332,7 +349,7 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
 
          IID eventsInterfaceId;
 
-      } connectionPoint_IPropertyNotifySink,connectionPoint_DWebBrowserEvents2;
+      } connectionPoint_IPropertyNotifySink,connectionPoint_DWebBrowserEvents2,connectionPoint_IPDFiumControlEvents;
 
 	  struct _IEnumConnectionPoints : IEnumConnectionPoints {
 
@@ -416,6 +433,80 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
 
       } *pDWebBrowserEvents_HTML_Host{NULL};
 
+      // IElementBehaviorFactory
+
+      class _IElementBehaviorFactory : public IElementBehaviorFactory  {
+
+      public:
+
+         _IElementBehaviorFactory(PDFiumControl * pp) : pParent(pp), dwCookie(0), pIElementBehaviorSite(NULL) {};
+
+         STDMETHOD(QueryInterface)(REFIID riid,void **ppv);
+
+         STDMETHOD_ (ULONG, AddRef)();
+         STDMETHOD_ (ULONG, Release)();
+
+         STDMETHOD(FindBehavior)(BSTR bstrBehavior,BSTR bstrBehaviorUrl,IElementBehaviorSite *pSite,IElementBehavior **ppBehavior);
+
+         long dwCookie;
+
+         IElementBehaviorSite *pIElementBehaviorSite;
+
+      private:
+
+         PDFiumControl *pParent;
+
+      } * pIElementBehaviorFactory{NULL};
+
+      // IElementBehavior
+
+      class _IElementBehavior : public IElementBehavior {
+
+      public:
+
+         _IElementBehavior(PDFiumControl *pp) : pParent(pp), pIHTMLPaintSite(NULL) {};
+         ~_IElementBehavior() { if ( pIHTMLPaintSite ) pIHTMLPaintSite -> Release(); };
+
+         STDMETHOD(QueryInterface)(REFIID riid,void **ppv);
+         STDMETHOD_ (ULONG, AddRef)();
+         STDMETHOD_ (ULONG, Release)();
+
+         STDMETHOD(Init)(IElementBehaviorSite *pBehaviorSite);
+         STDMETHOD(Notify)(long event,VARIANT *pVar);
+         STDMETHOD(Detach)();
+
+         IHTMLPaintSite *pIHTMLPaintSite;
+
+      private:
+
+         PDFiumControl *pParent;
+
+      } * pIElementBehavior{NULL};
+
+
+      // IHTMLPainter
+
+      class _IHTMLPainter : public IHTMLPainter {
+
+      public:
+
+         _IHTMLPainter(PDFiumControl *pp) : pParent(pp) {};
+
+         STDMETHOD(QueryInterface)(REFIID riid,void **ppv);
+         STDMETHOD_ (ULONG, AddRef)();
+         STDMETHOD_ (ULONG, Release)();
+
+      private:
+
+         STDMETHOD(Draw)(RECT rcBounds,RECT rcUpdate,LONG lDrawFlags,HDC hdc,LPVOID pvDrawObject);
+         STDMETHOD(OnResize)(SIZE size);
+         STDMETHOD(GetPainterInfo)(HTML_PAINTER_INFO *pInfo);
+         STDMETHOD(HitTestPoint)(POINT pt,BOOL *pbHit,LONG *plPartID);
+
+         PDFiumControl *pParent{NULL};
+
+      } * pIHTMLPainter{NULL};
+
 #include "COM Interfaces\Being Hosted\OleObject.h"
 
    public:
@@ -430,12 +521,18 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
 
    private:
 
-      IOleInPlaceObject *pIOleInPlaceObject_HTML{NULL};
-      IOleObject *pIOleObject_HTML{NULL};
-      IOleInPlaceActiveObject *pIOleInPlaceActiveObject_HTML{NULL};
+      //
+      // Objects used to host MSHTML
+      //
+
+      IOleInPlaceObject *pIOleInPlaceObject_MSHTML{NULL};
+      IOleObject *pIOleObject_MSHTML{NULL};
+      IOleInPlaceActiveObject *pIOleInPlaceActiveObject_MSHTML{NULL};
 
       IConnectionPoint *pIConnectionPoint_HTML{NULL};
       DWORD connectionCookie_HTML{0L};
+
+      HWND hwndExplorer{NULL};
 
       //
       // End of objects used to host MSHTML
@@ -449,7 +546,6 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
       IHTMLDocument3 *pIWebBrowserDocument{NULL};
       IHTMLElement2 *pDocumentElement{NULL};
       IHTMLBodyElement *pIHTMLBodyElement{NULL};
-
 
       RECT rcHTMLHost{0,0,0,0};
 
@@ -468,6 +564,7 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
       long cxPDFWidth{0};
       long cyPDFHeight{0};
       WCHAR szwDocumentName[1024];
+      BOOL enableExplorerContextMenu{TRUE};
       BYTE propertiesEnd{0xFF};
 
       long scrollTop{0};
@@ -493,11 +590,16 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
 
       std::list<PDFiumDocument *> openedDocuments;
 
+      static std::map<HWND,PDFiumControl *> explorerObjectMap;
+
       static long countInstances;
 
       static FPDF_LIBRARY_CONFIG pdfiumConfig;
 
+      static WNDPROC nativeExplorerHandler;
+
       static LRESULT CALLBACK siteHandler(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam);
+      static LRESULT CALLBACK explorerHandler(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam);
 
    };
 
@@ -507,12 +609,6 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
    MIDL_DEFINE_GUID(CLSID,CLSID_PDFiumControlPropertyPage,0xB5FF6E92,0xF84E,0x432C,0xAA,0xCB,0x09,0x82,0xC9,0x40,0xE5,0x36);
 
    void SaveBitmapFile(HDC hdcSource,HBITMAP hBitmap,WCHAR *pszwFileName);
-
-#define PIXELS_TO_HIMETRIC(x,ppli)  ( (2540*(x) + ((ppli) >> 1)) / (ppli) )
-#define HIMETRIC_TO_PIXELS(x,ppli)  ( ((ppli)*(x) + 1270) / 2540 )
-
-   int pixelsToHiMetric(SIZEL *pPixels,SIZEL *phiMetric);
-   int hiMetricToPixel(SIZEL *phiMetric,SIZEL *pPixels);
 
 #ifdef DEFINE_DATA
 

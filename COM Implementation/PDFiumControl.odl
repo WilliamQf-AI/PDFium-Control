@@ -36,6 +36,8 @@ library PDFiumControl {
       [propput] HRESULT PDFHeight([in] long cxPDFHeightInPixels);
       [propget] HRESULT PDFHeight([out,retval] long *pcxPDFHeightInPixels);
 
+      [propput] HRESULT EnableExplorerContextMenu([in] BOOL doEnable);
+
       [propget] HRESULT PDFPagesVisible([out,retval] BSTR *pPagesVisible);
 
       [propget] HRESULT PDFPageMostVisible([out,retval] long *pPageNumber);
@@ -73,6 +75,9 @@ library PDFiumControl {
       [propput] HRESULT ScrollBarVisible([in] BOOL);
       [propget] HRESULT ScrollBarVisible([out,retval] BOOL *);
 
+      [helpstring("Convert the PDF coordinates (points) into pixels in the entire MSHTML window space, which is scrollable with a height great enough to fit the entire document.")]
+      HRESULT ConvertPointsToScrollPanePixels(long pageNumber,RECT *pRect);
+
       HRESULT OpenDocument(BSTR documentFileName,GUID *pDocumentID);
 
       HRESULT CloseDocument(GUID *pDocumentID);
@@ -105,10 +110,24 @@ library PDFiumControl {
    }
 */
 
+   [uuid(B5FF6E92-F84E-432C-AACB-0982C940E534),
+      helpstring("PDFium Control Events Interface")] 
+
+   interface IPDFiumControlEvents : IUnknown {
+
+      HRESULT MouseMessage(UINT msg,WPARAM wParam,LPARAM lParam);
+
+      HRESULT Size(SIZE *pSize);
+
+      HRESULT Paint(HDC hdc,RECT *prcUpdate);
+
+   }
+
    [uuid(B5FF6E92-F84E-432C-AACB-0982C940E53F),
       helpstring("PDFium Control Object")]
       coclass PDFiumControl {
          [default] dispinterface IPDFiumControl;
+         [source] interface IPDFiumControlEvents;
          [source] dispinterface PDFium_DWebBrowserEvents2;
    }
 

@@ -74,7 +74,7 @@
 
       pParent -> pDocumentElement = NULL;
 
-#if 0
+#if 1
       if ( pParent -> pIElementBehaviorFactory )
          delete pParent -> pIElementBehaviorFactory;
 
@@ -107,7 +107,7 @@
 
          if ( pIHTMLElement ) {
 
-#if 0
+#if 1
             pParent -> pIElementBehaviorFactory = new _IElementBehaviorFactory(pParent);
             pParent -> pIElementBehavior = new _IElementBehavior(pParent);
             pParent -> pIHTMLPainter = new _IHTMLPainter(pParent);
@@ -115,7 +115,7 @@
 
             pIHTMLElement -> QueryInterface(IID_IHTMLElement2,reinterpret_cast<void **>(&pParent -> pDocumentElement));
 
-#if 0
+#if 1
             IUnknown *pIUnknown = NULL;
 
             pParent -> pIElementBehaviorFactory -> QueryInterface(IID_IUnknown,reinterpret_cast<void **>(&pIUnknown));
@@ -154,6 +154,20 @@
 
       if ( pParent -> szwPendingPrintDocumentName[0] ) 
          PostMessage(pParent -> hwndSite,WM_PRINT_DOCUMENT,0L,0L);
+
+      if ( NULL == pParent -> hwndExplorer ) {
+
+         pParent -> hwndExplorer = FindWindowWithClass(pParent -> hwndSite,"Internet Explorer_Server");
+
+         explorerObjectMap[pParent -> hwndExplorer] = pParent;
+
+         if ( NULL == nativeExplorerHandler && ! ( NULL == pParent -> hwndExplorer ) ) 
+            nativeExplorerHandler = (WNDPROC)SetWindowLongPtr(pParent -> hwndExplorer,GWLP_WNDPROC,(LONG_PTR)explorerHandler);
+         else 
+            if ( ! ( NULL == pParent -> hwndExplorer ) )
+               SetWindowLongPtr(pParent -> hwndExplorer,GWLP_WNDPROC,(LONG_PTR)explorerHandler);
+
+      }
 
 #if 0
       pParent -> ignoreDocumentOpenInWebBrowser = false;

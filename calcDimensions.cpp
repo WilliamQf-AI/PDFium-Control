@@ -13,7 +13,9 @@
    pDocumentElement -> get_scrollHeight(&scrollHeight);
 
    RECT rcClient;
+
    GetWindowRect(hwndSite,&rcClient);
+
    cyClient = rcClient.bottom - rcClient.top;
 
    long amountVisible = 0;
@@ -52,6 +54,20 @@
       pPDFiumDocument_Current -> put_PDFPageYPixels(k + 1,y);
       pPDFiumDocument_Current -> put_PDFPageWidthPixels(k + 1,cx);
       pPDFiumDocument_Current -> put_PDFPageHeightPixels(k + 1,cy);
+
+      long cxPoints,cyPoints;
+
+      pPDFiumDocument_Current -> get_PDFPageWidthPoints(k + 1,&cxPoints);
+
+      pPDFiumDocument_Current -> get_PDFPageHeightPoints(k + 1,&cyPoints);
+
+      double scalePixelsToPoints = (double)cxPoints / (double) cx;
+
+      pPDFiumDocument_Current -> put_PDFPageXPoints(k + 1,(long)((double)x * scalePixelsToPoints));
+
+      scalePixelsToPoints = (double)cyPoints / (double) cy;
+
+      pPDFiumDocument_Current -> put_PDFPageYPoints(k + 1,(long)((double)y * scalePixelsToPoints));
 
       if ( isInView(y,cy) ) {
 

@@ -43,7 +43,7 @@
 
    IOleDocument *pIOleDocument = NULL;
 
-   if ( E_NOINTERFACE == pParent -> pIOleObject_HTML -> QueryInterface(IID_IOleDocument,reinterpret_cast<void **>(&pIOleDocument) ) )
+   if ( E_NOINTERFACE == pParent -> pIOleObject_MSHTML -> QueryInterface(IID_IOleDocument,reinterpret_cast<void **>(&pIOleDocument) ) )
       return E_UNEXPECTED;
 
    IOleInPlaceSite *pIOleInPlaceSite = NULL;

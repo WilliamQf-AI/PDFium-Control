@@ -85,7 +85,7 @@
  
    STDMETHODIMP PDFiumControl::_IOleObject::GetExtent(DWORD dwDrawAspect,SIZEL *pSizel) {
    memcpy(pSizel,&containerSize,sizeof(SIZEL));
-   pixelsToHiMetric(pSizel,pSizel);
+   pixelToHiMetric(pSizel,pSizel);
    return S_OK;
    }
  

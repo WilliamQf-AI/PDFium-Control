@@ -200,6 +200,7 @@ regsvr32 /s /c "$(TargetPath)"</Command>
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Common\source\utilities.cpp" />
     <ClCompile Include="calcDimensions.cpp" />
     <ClCompile Include="COM Implementation\dllMain.cpp" />
     <ClCompile Include="COM Interfaces\Being Hosted\IDataObject.cpp" />
@@ -219,12 +220,15 @@ regsvr32 /s /c "$(TargetPath)"</Command>
     <ClCompile Include="COM Interfaces\Being Hosted\ISpecifyPropertyPages.cpp" />
     <ClCompile Include="COM Interfaces\Being Hosted\IViewObject.cpp" />
     <ClCompile Include="COM Interfaces\Being Hosted\propertiesHandler.cpp" />
-    <ClCompile Include="COM Interfaces\Being Hosted\siteHandler.cpp" />
+    <ClCompile Include="COM Interfaces\Being Hosted\handlers.cpp" />
     <ClCompile Include="COM Interfaces\COM Events\IConnectionPoint.cpp" />
     <ClCompile Include="COM Interfaces\COM Events\IConnectionPointContainer.cpp" />
     <ClCompile Include="COM Interfaces\COM Events\IEnumConnectionPoints.cpp" />
     <ClCompile Include="COM Interfaces\COM Events\IEnumerateConnections.cpp" />
     <ClCompile Include="COM Interfaces\Hosting MSHTML\DWebBrowserEvents.cpp" />
+    <ClCompile Include="COM Interfaces\Hosting MSHTML\IElementBehavior.cpp" />
+    <ClCompile Include="COM Interfaces\Hosting MSHTML\IElementBehaviorFactory.cpp" />
+    <ClCompile Include="COM Interfaces\Hosting MSHTML\IHTMLPainter.cpp" />
     <ClCompile Include="COM Interfaces\Hosting MSHTML\IOleClientSite.cpp" />
     <ClCompile Include="COM Interfaces\Hosting MSHTML\IOleDocumentSite.cpp" />
     <ClCompile Include="COM Interfaces\Hosting MSHTML\IOleInPlaceFrame.cpp" />

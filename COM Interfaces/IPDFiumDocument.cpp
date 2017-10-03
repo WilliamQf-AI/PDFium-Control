@@ -97,6 +97,10 @@
       pPixelDimensions -> x = 0;
       pPixelDimensions -> y = 0;
 
+      pagePDFLocations[k] = pPixelDimensions;
+
+      pPixelDimensions = new POINTL();
+
       pagePixelDimensions[k] = pPixelDimensions;
 
       POINTL *pPixelLocation = new POINTL();
@@ -349,4 +353,31 @@
    pagePDFDimensions[pageIndex] -> y = cy;
 
    return S_OK;
+   }
+
+
+   HRESULT __stdcall PDFiumControl::PDFiumDocument::ConvertPointsToScrollPanePixels(long pageNumber,RECT *pRect) {
+
+   NORMALIZE_PAGE_NUMBER(pageNumber)
+
+   long x = pagePixelLocations[pageIndex] -> x;
+   long y = pagePixelLocations[pageIndex] -> y;
+   long cy = pagePixelDimensions[pageIndex] -> y;
+
+   long pointsX = pagePDFLocations[pageIndex] -> x;
+   long pointsY = pagePDFLocations[pageIndex] -> y;
+
+   double scalePointsToPixels = (double)pagePixelDimensions[pageIndex] -> y / (double)pagePDFDimensions[pageIndex] -> y;
+
+   long cxTarget = pRect -> right - pRect -> left;
+   long cyTarget = pRect -> top - pRect -> bottom;
+   long pointsTop = pagePDFDimensions[pageIndex] -> y - pRect -> top;
+
+   pRect -> left = x + (long)((double)pRect -> left * scalePointsToPixels);
+   pRect -> top = y + (long)((double)pointsTop * scalePointsToPixels);
+   pRect -> right = pRect -> left + (long)((double)cxTarget * scalePointsToPixels);
+   pRect -> bottom = pRect -> top + (long)((double)cyTarget * scalePointsToPixels);
+
+   return S_OK;
+
    }

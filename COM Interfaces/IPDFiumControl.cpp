@@ -43,6 +43,12 @@
    return S_OK;
    }
 
+   HRESULT __stdcall PDFiumControl::put_EnableExplorerContextMenu(BOOL doEnable) {
+
+   enableExplorerContextMenu = doEnable;
+
+   return S_OK;
+   }
 
    HRESULT __stdcall PDFiumControl::get_PDFPagesVisible(BSTR *pPagesVisible) {
 
@@ -256,6 +262,12 @@
    return S_OK;
    }
 
+
+   HRESULT __stdcall PDFiumControl::ConvertPointsToScrollPanePixels(long pageNumber,RECT *pRect) {
+   return pPDFiumDocument_Current -> ConvertPointsToScrollPanePixels(pageNumber,pRect);
+   }
+
+
    HRESULT __stdcall PDFiumControl::OpenDocument(BSTR pdfFileName,GUID *pIPDFiumDocumentId) {
 
    if ( ! pIPDFiumDocumentId )
@@ -403,9 +415,9 @@
 
    rc = pIWebBrowser -> Navigate(documentToLoad,&vEmpty,&target,&vEmpty,&vEmpty);
 
-   pIOleInPlaceObject_HTML -> SetObjectRects(&rcHTMLHost,&rcHTMLHost);
+   pIOleInPlaceObject_MSHTML -> SetObjectRects(&rcHTMLHost,&rcHTMLHost);
 
-   pIOleObject_HTML -> DoVerb(OLEIVERB_SHOW,NULL,pIOleClientSite_HTML_Host,0,hwndSite,&rcHTMLHost);
+   pIOleObject_MSHTML -> DoVerb(OLEIVERB_SHOW,NULL,pIOleClientSite_HTML_Host,0,hwndSite,&rcHTMLHost);
 
    SysFreeString(documentToLoad);
 
@@ -507,6 +519,12 @@ printf("\nhello world");
 
 
    HRESULT __stdcall PDFiumControl::Cleanup() {
+
+   if ( hwndExplorer ) {
+      SetWindowLongPtr(hwndExplorer,GWLP_WNDPROC,(LONG_PTR)nativeExplorerHandler);
+      explorerObjectMap.erase(hwndExplorer);
+      hwndExplorer = NULL;
+   }
 
    for ( PDFiumDocument *pDocument : openedDocuments ) 
       pDocument -> Release();
