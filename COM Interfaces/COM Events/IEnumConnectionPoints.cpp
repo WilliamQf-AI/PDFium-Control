@@ -5,38 +5,45 @@
    	  cpCount(connectionPointCount),
         pParent(pp) {
  
-  connectionPoints = new _IConnectionPoint *[cpCount];
-  for ( int k = 0; k < cpCount; k++ ) {
-     connectionPoints[k] = cp[k];
-     connectionPoints[k] -> AddRef();
-  }
+   connectionPoints = new _IConnectionPoint *[cpCount];
 
-  Reset();
+   for ( int k = 0; k < cpCount; k++ ) {
+      connectionPoints[k] = cp[k];
+      connectionPoints[k] -> AddRef();
+   }
 
-  return;
-  };
+   Reset();
 
-
-  PDFiumControl::_IEnumConnectionPoints::~_IEnumConnectionPoints() { 
-  for ( int k = 0; k < cpCount; k++ )
-     connectionPoints[k] -> Release();
-  delete [] connectionPoints;
-  return;
-  };
+   return;
+   };
 
 
+   PDFiumControl::_IEnumConnectionPoints::~_IEnumConnectionPoints() { 
+   for ( int k = 0; k < cpCount; k++ )
+      connectionPoints[k] -> Release();
+   delete [] connectionPoints;
+   return;
+   };
 
-  HRESULT PDFiumControl::_IEnumConnectionPoints::QueryInterface(REFIID riid,void **ppv) {
-  return pParent -> QueryInterface(riid,ppv);
-  }
 
-  unsigned long __stdcall PDFiumControl::_IEnumConnectionPoints::AddRef() {
-  return pParent -> AddRef();
-  }
 
-  unsigned long __stdcall PDFiumControl::_IEnumConnectionPoints::Release() {
-  return pParent -> Release();
-  }
+   HRESULT PDFiumControl::_IEnumConnectionPoints::QueryInterface(REFIID riid,void **ppv) {
+   *ppv = NULL;
+   if ( riid == IID_IEnumConnectionPoints ) 
+      *ppv = static_cast<IEnumConnectionPoints *>(this);
+   else
+      return pParent -> QueryInterface(riid,ppv);
+   AddRef();
+   return S_OK;
+   }
+
+   unsigned long __stdcall PDFiumControl::_IEnumConnectionPoints::AddRef() {
+   return pParent -> AddRef();
+   }
+
+   unsigned long __stdcall PDFiumControl::_IEnumConnectionPoints::Release() {
+   return pParent -> Release();
+   }
 
 
   HRESULT PDFiumControl::_IEnumConnectionPoints::Next(ULONG countRequested,IConnectionPoint **rgpcn,ULONG *pcFetched) {
@@ -77,6 +84,7 @@
   }
 
   HRESULT PDFiumControl::_IEnumConnectionPoints::Clone(IEnumConnectionPoints **ppEnum) {
+
   _IEnumConnectionPoints* p;
 
   *ppEnum = NULL;

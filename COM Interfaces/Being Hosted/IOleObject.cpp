@@ -29,9 +29,7 @@
       pIOleInPlaceSite_MySite(NULL),
 
       hwndContainer(NULL),
-      hwndPropertyPage(NULL),
-
-      refCount(1)
+      hwndPropertyPage(NULL)
 
    {
 

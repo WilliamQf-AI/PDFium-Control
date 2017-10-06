@@ -10,46 +10,54 @@
      countLiveConnections(0),
      eventsInterfaceId(theInterface),
      countConnections(ALLOC_CONNECTIONS)
-  { 
-  connections = new CONNECTDATA[countConnections];
-  memset(connections, 0, countConnections * sizeof(CONNECTDATA));
-  return;
-  };
+   { 
+   pConnections = new CONNECTDATA[countConnections];
+   memset(pConnections, 0, countConnections * sizeof(CONNECTDATA));
+   pEnumConnections = new PDFiumControl::_IConnectionPoint::_IEnumConnections(this);
+   return;
+   }
 
 
-  PDFiumControl::_IConnectionPoint::~_IConnectionPoint() {
-  for ( int k = 0; k < countConnections; k++ ) 
-     if ( connections[k].pUnk ) connections[k].pUnk -> Release();
-  delete [] connections;
-  return;
-  }
+   PDFiumControl::_IConnectionPoint::~_IConnectionPoint() {
+   for ( int k = 0; k < countConnections; k++ ) 
+      if ( pConnections[k].pUnk ) 
+         pConnections[k].pUnk -> Release();
+   delete [] pConnections;
+   return;
+   }
 
 
-  HRESULT PDFiumControl::_IConnectionPoint::QueryInterface(REFIID riid,void **ppv) {
-  return pParent -> QueryInterface(riid,ppv);
-  }
+   HRESULT PDFiumControl::_IConnectionPoint::QueryInterface(REFIID riid,void **ppv) {
+   *ppv = NULL;
+   if ( IID_IConnectionPoint == riid ) 
+      *ppv = static_cast<IConnectionPoint *>(this);
+   else
+      return pParent -> QueryInterface(riid,ppv);
+   AddRef();
+   return S_OK;
+   }
 
 
-  STDMETHODIMP_(ULONG) PDFiumControl::_IConnectionPoint::AddRef() {
-  return pParent -> AddRef();
-  }
+   STDMETHODIMP_(ULONG) PDFiumControl::_IConnectionPoint::AddRef() {
+   return pParent -> AddRef();
+   }
 
-  STDMETHODIMP_(ULONG) PDFiumControl::_IConnectionPoint::Release() {
-  return pParent -> Release();
-  }
-
-
-  STDMETHODIMP PDFiumControl::_IConnectionPoint::GetConnectionInterface(IID *pIID) {
-  if ( NULL == pIID ) 
-    return E_POINTER;
-  *pIID = eventsInterfaceId;
-  return S_OK;
-  }
+   STDMETHODIMP_(ULONG) PDFiumControl::_IConnectionPoint::Release() {
+   return pParent -> Release();
+   }
 
 
-  STDMETHODIMP PDFiumControl::_IConnectionPoint::GetConnectionPointContainer(IConnectionPointContainer **ppCPC) {
-  return pParent -> QueryInterface(IID_IConnectionPointContainer,(void **)ppCPC);
-  }
+   STDMETHODIMP PDFiumControl::_IConnectionPoint::GetConnectionInterface(IID *pIID) {
+   if ( NULL == pIID ) 
+      return E_POINTER;
+   *pIID = eventsInterfaceId;
+   return S_OK;
+   }
+
+
+   STDMETHODIMP PDFiumControl::_IConnectionPoint::GetConnectionPointContainer(IConnectionPointContainer **ppCPC) {
+   return QueryInterface(IID_IConnectionPointContainer,(void **)ppCPC);
+   }
 
 
    STDMETHODIMP PDFiumControl::_IConnectionPoint::Advise(IUnknown *pUnkSink,DWORD *pdwCookie) {
@@ -68,16 +76,13 @@
    if ( ! pISink ) 
       return CONNECT_E_CANNOTCONNECT;
 
-   int freeSlot;
-
-   *pdwCookie = 0;
-
-   freeSlot = getSlot();
+   int freeSlot = getSlot();
 
    pISink -> AddRef();
 
-   connections[freeSlot].pUnk = pISink;
-   connections[freeSlot].dwCookie = nextCookie;
+   pConnections[freeSlot].pUnk = pISink;
+
+   pConnections[freeSlot].dwCookie = nextCookie;
 
    *pdwCookie = nextCookie++;
 
@@ -87,70 +92,72 @@
    }
 
 
-  STDMETHODIMP PDFiumControl::_IConnectionPoint::Unadvise(DWORD dwCookie) {
+   STDMETHODIMP PDFiumControl::_IConnectionPoint::Unadvise(DWORD dwCookie) {
 
-  if ( 0 == dwCookie ) return E_INVALIDARG;
+   if ( 0 == dwCookie ) 
+      return E_INVALIDARG;
 
-  int slot;
+   int slot = findSlot(dwCookie);
 
-  slot = findSlot(dwCookie);
+   if ( -1 == slot ) 
+      return CONNECT_E_NOCONNECTION;
 
-  if ( slot == -1 ) return CONNECT_E_NOCONNECTION;
+   if ( pConnections[slot].pUnk ) 
+      pConnections[slot].pUnk -> Release();
 
-  if ( connections[slot].pUnk ) connections[slot].pUnk -> Release();
+   pConnections[slot].pUnk = NULL;
 
-  connections[slot].dwCookie = 0;
+   pConnections[slot].dwCookie = 0;
 
-  countLiveConnections--;
+   countLiveConnections--;
 
-  return S_OK;
-  }
-
-  STDMETHODIMP PDFiumControl::_IConnectionPoint::EnumConnections(IEnumConnections **ppEnum) {
-  CONNECTDATA *tempConnections;
-  int i,j;
-
-  *ppEnum = NULL;
-
-  if ( countLiveConnections == 0 ) return OLE_E_NOCONNECTION;
-
-  tempConnections = new CONNECTDATA[countLiveConnections];
-
-  for ( i = 0, j = 0; i < countConnections && j < countLiveConnections; i++) {
-
-    if ( 0 != connections[i].dwCookie ) {
-      tempConnections[j].pUnk = (IUnknown *)connections[i].pUnk;
-      tempConnections[j].dwCookie = connections[i].dwCookie;
-      j++;
-    }
-  }
-
-  _IEnumerateConnections *p = new _IEnumerateConnections(this,countLiveConnections,tempConnections,0);
-  p -> QueryInterface(IID_IEnumConnections,(void **)ppEnum);
-
-  delete [] tempConnections;
-
-  return S_OK;
-  }
+   return S_OK;
+   }
 
 
-  int PDFiumControl::_IConnectionPoint::getSlot() {
-  CONNECTDATA* moreConnections;
-  int i;
-  i = findSlot(0);
-  if ( i > -1 ) return i;
-  moreConnections = new CONNECTDATA[countConnections + ALLOC_CONNECTIONS];
-  memset( moreConnections, 0, sizeof(CONNECTDATA) * (countConnections + ALLOC_CONNECTIONS));
-  memcpy( moreConnections, connections, sizeof(CONNECTDATA) * countConnections);
-  delete [] connections;
-  connections = moreConnections;
-  countConnections += ALLOC_CONNECTIONS;
-  return countConnections - ALLOC_CONNECTIONS;
-  }
+   STDMETHODIMP PDFiumControl::_IConnectionPoint::EnumConnections(IEnumConnections **ppEnum) {
+
+   *ppEnum = NULL;
+
+   if ( 0 == countLiveConnections ) 
+      return OLE_E_NOCONNECTION;
+
+   pEnumConnections -> Reset();
+
+   pEnumConnections -> QueryInterface(IID_IEnumConnections,(void **)ppEnum);
+
+   return S_OK;
+   }
 
 
-  int PDFiumControl::_IConnectionPoint::findSlot(DWORD dwCookie) {
-  for ( int i = 0; i < countConnections; i++ )
-     if ( dwCookie == connections[i].dwCookie ) return i;
-  return -1;
-  }
+   int PDFiumControl::_IConnectionPoint::getSlot() {
+
+   CONNECTDATA *pMoreConnections;
+
+   int k = findSlot(0);
+
+   if ( -1 < k ) 
+      return k;
+
+   pMoreConnections = new CONNECTDATA[countConnections + ALLOC_CONNECTIONS];
+
+   memset( pMoreConnections, 0, sizeof(CONNECTDATA) * (countConnections + ALLOC_CONNECTIONS));
+
+   memcpy( pMoreConnections, pConnections, sizeof(CONNECTDATA) * countConnections);
+
+   delete [] pConnections;
+
+   pConnections = pMoreConnections;
+
+   countConnections += ALLOC_CONNECTIONS;
+
+   return countConnections - ALLOC_CONNECTIONS;
+   }
+
+
+   int PDFiumControl::_IConnectionPoint::findSlot(DWORD dwCookie) {
+   for ( int k = 0; k < countConnections; k++ )
+      if ( dwCookie == pConnections[k].dwCookie ) 
+         return k;
+   return -1;
+   }

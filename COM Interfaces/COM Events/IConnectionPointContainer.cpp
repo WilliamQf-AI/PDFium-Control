@@ -14,7 +14,13 @@
 
 
    HRESULT PDFiumControl::_IConnectionPointContainer::QueryInterface(REFIID riid,void **ppv) {
-   return pParent -> QueryInterface(riid,ppv);
+   *ppv = NULL;
+   if ( IID_IConnectionPointContainer == riid ) 
+      *ppv = static_cast<IConnectionPointContainer *>(this);
+   else
+      return pParent -> QueryInterface(riid,ppv);
+   AddRef();
+   return S_OK;
    }
 
 
@@ -42,7 +48,7 @@
 
    pConnectionPoints[2] = &pParent -> connectionPoint_IPDFiumControlEvents;
 
-   pParent -> pEnumConnectionPoints = new _IEnumConnectionPoints(pParent,pConnectionPoints,2);
+   pParent -> pEnumConnectionPoints = new _IEnumConnectionPoints(pParent,pConnectionPoints,3);
  
    return pParent -> pEnumConnectionPoints -> QueryInterface(IID_IEnumConnectionPoints,(void **)ppEnum);
    }
@@ -92,7 +98,7 @@
    // DWebBrowserEvents2
 
    void PDFiumControl::_IConnectionPointContainer::fire_Invoke(DISPID dispidMember, REFIID riid, LCID lcid, WORD wFlags,DISPPARAMS * pDispParams, VARIANT FAR* pvarResult,EXCEPINFO FAR* pexcepinfo, UINT FAR* puArgErr) {
-   IEnumConnections* pIEnum;
+   IEnumConnections* pIEnum = NULL;
    CONNECTDATA connectData;
    pParent -> connectionPoint_DWebBrowserEvents2.EnumConnections(&pIEnum);
    if ( ! pIEnum ) return;
@@ -101,7 +107,7 @@
       DWebBrowserEvents2 *pClient = reinterpret_cast<DWebBrowserEvents2 *>(connectData.pUnk);
       pClient -> Invoke(dispidMember,riid,lcid,wFlags,pDispParams,pvarResult,pexcepinfo,puArgErr);
    }
-   static_cast<IUnknown*>(pIEnum) -> Release();
+   pIEnum -> Release();
    return;
    }
 
@@ -117,7 +123,7 @@
       IPDFiumControlEvents *pClient = reinterpret_cast<IPDFiumControlEvents *>(connectData.pUnk);
       pClient -> MouseMessage(msg,wParam,lParam);
    }
-   static_cast<IUnknown*>(pIEnum) -> Release();
+   pIEnum -> Release();
    return;
    }
 
@@ -131,7 +137,7 @@
       IPDFiumControlEvents *pClient = reinterpret_cast<IPDFiumControlEvents *>(connectData.pUnk);
       pClient -> Size(pSize);
    }
-   static_cast<IUnknown*>(pIEnum) -> Release();
+   pIEnum -> Release();
    return;
    }
 
@@ -145,6 +151,6 @@
       IPDFiumControlEvents *pClient = reinterpret_cast<IPDFiumControlEvents *>(connectData.pUnk);
       pClient -> Paint(hdc,prcUpdate);
    }
-   static_cast<IUnknown*>(pIEnum) -> Release();
+   pIEnum -> Release();
    return;
    }

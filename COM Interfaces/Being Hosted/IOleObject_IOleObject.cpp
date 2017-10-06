@@ -31,8 +31,6 @@
  
    pIOleClientSite_MySite -> AddRef();
 
-   initialize();
-
    return S_OK;
    }
  

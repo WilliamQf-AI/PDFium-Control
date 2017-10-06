@@ -5,77 +5,71 @@
 
    *ppv = 0;
 
+if ( IID_IServiceProvider == riid )
+return E_NOINTERFACE;
+
    if ( IID_IUnknown == riid )
       *ppv = this;
    else
+      if ( IID_IPDFiumControl == riid )
+         *ppv = static_cast<IPDFiumControl *>(this);
 
-   if ( IID_IPDFiumControl == riid )
-      *ppv = static_cast<IPDFiumControl *>(this);
-   else
+   if ( * ppv ) {
+      AddRef();
+      return S_OK;
+   }
 
    if ( IID_IConnectionPointContainer == riid ) 
-      *ppv = static_cast<IConnectionPointContainer *>(&connectionPointContainer);
-   else
+      return connectionPointContainer.QueryInterface(riid,ppv);
 
    //
    // Hosting MSHTML 
    //
 
    if ( IID_IOleInPlaceSite == riid )
-      *ppv = static_cast<IOleInPlaceSite *>(pIOleInPlaceSite_HTML_Host);
-   else
+      return pIOleInPlaceSite_HTML_Host -> QueryInterface(riid,ppv);
 
    if ( IID_IOleInPlaceSiteEx == riid )
-      *ppv = static_cast<IOleInPlaceSiteEx *>(pIOleInPlaceSite_HTML_Host);
-   else
+      return pIOleInPlaceSite_HTML_Host -> QueryInterface(riid,ppv);
 
    if ( IID_IOleDocumentSite == riid ) 
-      *ppv = static_cast<IOleDocumentSite *>(pIOleDocumentSite_HTML_Host);
-   else
+      return pIOleDocumentSite_HTML_Host -> QueryInterface(riid,ppv);
 
    if ( IID_IOleInPlaceFrame == riid ) 
-      *ppv = static_cast<IOleInPlaceFrame *>(pIOleInPlaceFrame_HTML_Host);
-   else
+      return pIOleInPlaceFrame_HTML_Host -> QueryInterface(riid,ppv);
 
-   if ( riid == DIID_DWebBrowserEvents2 )
+   if ( DIID_DWebBrowserEvents2 == riid )
       return pDWebBrowserEvents_HTML_Host -> QueryInterface(riid,ppv);
-   else
 
    if ( IID_IElementBehaviorFactory == riid )
       return pIElementBehaviorFactory -> QueryInterface(riid,ppv);
-   else
 
    if ( IID_IElementBehavior == riid )
       return pIElementBehavior -> QueryInterface(riid,ppv);
-   else
 
    if ( IID_IHTMLPainter == riid ) 
       return pIHTMLPainter -> QueryInterface(riid,ppv);
-   else
 
    //
    // Mimicking the Adobe Reader interface
    //
 
    if ( IID_IPDFiumControl_IAcroAXDocShim == riid || IID_IAcroAXDocShim == riid ) {
+
       if ( NULL == pIAcroAXDocShim )
          pIAcroAXDocShim = new _IAcroAXDocShim(this);
+
       return pIAcroAXDocShim -> QueryInterface(riid,ppv);
-   } else {
-
-      if ( fromOleObject )
-         return E_NOINTERFACE;
-
-      if ( ! pIOleObject )
-         pIOleObject = new _IOleObject(this);
-
-      return pIOleObject -> QueryInterface(riid,ppv);
 
    }
 
-   AddRef();
+   if ( fromOleObject )
+      return E_NOINTERFACE;
 
-   return S_OK;
+   if ( ! pIOleObject )
+      pIOleObject = new _IOleObject(this);
+
+   return pIOleObject -> QueryInterface(riid,ppv);
    }
 
 

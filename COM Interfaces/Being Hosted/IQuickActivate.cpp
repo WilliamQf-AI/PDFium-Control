@@ -41,8 +41,6 @@
    if ( pParent -> pIOleClientSite_MySite )
       pParent -> pIOleClientSite_MySite -> AddRef();
 
-   pParent -> initialize();
-
    return S_OK;
    }
 

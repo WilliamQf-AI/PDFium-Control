@@ -13,8 +13,6 @@
       connectionPoint_DWebBrowserEvents2(this,DIID_DWebBrowserEvents2),
       connectionPoint_IPDFiumControlEvents(this,IID_IPDFiumControlEvents),
 
-      openedDocuments(),
-
       isPDF(FALSE),
 
       refCount(0)
@@ -65,6 +63,117 @@
 
    Cleanup();
 
+   ReleaseMSHTML();
+
+   if ( pIOleObject )
+      delete pIOleObject;
+
+   pIOleObject = NULL;
+
+   return;
+   }
+
+
+   void PDFiumControl::InitializeMSHTML() {
+
+   HWND hwndContainer = NULL;
+
+   if ( pIOleObject -> pIOleInPlaceSite_MySite )
+      pIOleObject -> pIOleInPlaceSite_MySite -> Release();
+ 
+   pIOleObject -> pIOleInPlaceSite_MySite = NULL;
+ 
+   pIOleObject -> pIOleClientSite_MySite -> QueryInterface(IID_IOleInPlaceSite,(void **)&pIOleObject -> pIOleInPlaceSite_MySite);
+
+   pIOleObject -> pIOleInPlaceSite_MySite -> GetWindow(&hwndContainer);
+
+   GetClientRect(hwndContainer,&rcHTMLHost);
+
+   if ( hwndSite ) {
+      SetParent(hwndSite,hwndContainer);
+      return;
+   }
+
+   IDispatch* pIDispatch;
+
+   HRESULT rc = pIOleObject -> pIOleClientSite_MySite -> QueryInterface(IID_IDispatch,reinterpret_cast<void **>(&pIDispatch));
+
+   if ( S_OK == rc ) {
+      DISPPARAMS dispparamsNoArgs = {NULL, NULL, 0, 0};
+      VARIANT var = {VT_EMPTY};
+      var.vt = VT_BOOL;
+      pIDispatch -> Invoke(DISPID_AMBIENT_USERMODE,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,&dispparamsNoArgs,&var,NULL,NULL);
+      pIDispatch -> Release();
+      pIOleObject -> isRunning = (var.bVal == 0 ? false : true);
+   } else
+      pIOleObject -> isRunning = true;
+
+   WNDCLASS gClass;
+   
+   memset(&gClass,0,sizeof(WNDCLASS));
+   gClass.style = CS_BYTEALIGNCLIENT | CS_BYTEALIGNWINDOW;
+   gClass.lpfnWndProc = siteHandler;
+   gClass.cbClsExtra = 32;
+   gClass.cbWndExtra = 32;
+   gClass.hInstance = hModule;
+   gClass.hIcon = NULL;
+   gClass.hCursor = NULL;
+   gClass.hbrBackground = 0;
+   gClass.lpszMenuName = NULL;
+   gClass.lpszClassName = L"PDFiumControl";
+  
+   RegisterClass(&gClass);
+
+   hwndSite = CreateWindowEx(0L,L"PDFiumControl",L"",WS_CHILD | WS_VISIBLE,0,0,rcHTMLHost.right - rcHTMLHost.left,rcHTMLHost.bottom - rcHTMLHost.top,hwndContainer,NULL,hModule,(void *)this);
+
+   pIOleInPlaceFrame_HTML_Host = new _IOleInPlaceFrame(this,hwndSite);
+   pIOleInPlaceSite_HTML_Host = new _IOleInPlaceSite(this,pIOleInPlaceFrame_HTML_Host);
+   pIOleClientSite_HTML_Host = new _IOleClientSite(this,pIOleInPlaceSite_HTML_Host,pIOleInPlaceFrame_HTML_Host);
+   pIOleDocumentSite_HTML_Host = new _IOleDocumentSite(this,pIOleClientSite_HTML_Host);
+
+   rc = CoCreateInstance(CLSID_WebBrowser,NULL,CLSCTX_INPROC_SERVER,IID_IWebBrowser2,reinterpret_cast<void **>(&pIWebBrowser));
+
+   if ( S_OK != rc ) {
+      MessageBox(NULL,L"The PDFium Control needs to use the Microsoft IE embedded ActiveX Control\n\n"
+                        L"This component is part of Microsoft Internet Explorer.\n\n"
+                        L"Is IE Installed on your system ?",L"Error!",MB_ICONEXCLAMATION);
+      return;
+   }
+
+   rc = pIWebBrowser -> put_Resizable(TRUE);
+
+   pIWebBrowser -> put_RegisterAsDropTarget(TRUE);
+
+   pIWebBrowser -> QueryInterface(IID_IOleObject,reinterpret_cast<void **>(&pIOleObject_MSHTML));
+
+   pIOleObject_MSHTML -> QueryInterface(IID_IOleInPlaceObject,reinterpret_cast<void **>(&pIOleInPlaceObject_MSHTML));
+
+   pIOleObject_MSHTML -> SetClientSite(pIOleClientSite_HTML_Host);
+
+   pDWebBrowserEvents_HTML_Host = new _DWebBrowserEvents2(this);
+
+   IUnknown *pIUnknown = NULL;
+
+   pDWebBrowserEvents_HTML_Host -> QueryInterface(IID_IUnknown,reinterpret_cast<void **>(&pIUnknown));
+
+   IConnectionPointContainer *pIConnectionPointContainer = NULL;
+
+   pIWebBrowser -> QueryInterface(IID_IConnectionPointContainer,reinterpret_cast<void**>(&pIConnectionPointContainer));
+
+   if ( pIConnectionPointContainer ) {
+      pIConnectionPointContainer -> FindConnectionPoint(DIID_DWebBrowserEvents2,&pIConnectionPoint_MSHTML);
+      if ( pIConnectionPoint_MSHTML ) 
+         pIConnectionPoint_MSHTML -> Advise(pIUnknown,&connectionCookie_MSHTML);
+      pIConnectionPointContainer -> Release();
+   }
+
+   pIUnknown -> Release();
+
+   return;
+   }
+
+   void PDFiumControl::ReleaseMSHTML() {
+
    if ( pIElementBehaviorFactory )
       delete pIElementBehaviorFactory;
 
@@ -95,75 +204,32 @@
 
    pDocumentElement = NULL;
 
-   if ( pIOleObject )
-      delete pIOleObject;
-
-   return;
+   if ( pIConnectionPoint_MSHTML ) {
+      pIConnectionPoint_MSHTML -> Unadvise(connectionCookie_MSHTML);
+      pIConnectionPoint_MSHTML -> Release();
+      pIConnectionPoint_MSHTML = NULL;
    }
 
-
-   void PDFiumControl::Initialize(HWND hwndContainer) {
-
-   WNDCLASS gClass;
-   
-   memset(&gClass,0,sizeof(WNDCLASS));
-   gClass.style = CS_BYTEALIGNCLIENT | CS_BYTEALIGNWINDOW;
-   gClass.lpfnWndProc = siteHandler;
-   gClass.cbClsExtra = 32;
-   gClass.cbWndExtra = 32;
-   gClass.hInstance = hModule;
-   gClass.hIcon = NULL;
-   gClass.hCursor = NULL;
-   gClass.hbrBackground = 0;
-   gClass.lpszMenuName = NULL;
-   gClass.lpszClassName = L"PDFiumControl";
-  
-   RegisterClass(&gClass);
-
-   hwndSite = CreateWindowEx(0L,L"PDFiumControl",L"",WS_CHILD | WS_VISIBLE,0,0,0,0,hwndContainer,NULL,hModule,(void *)this);
-
-   pIOleInPlaceFrame_HTML_Host = new _IOleInPlaceFrame(this,hwndSite);
-   pIOleInPlaceSite_HTML_Host = new _IOleInPlaceSite(this,pIOleInPlaceFrame_HTML_Host);
-   pIOleClientSite_HTML_Host = new _IOleClientSite(this,pIOleInPlaceSite_HTML_Host,pIOleInPlaceFrame_HTML_Host);
-   pIOleDocumentSite_HTML_Host = new _IOleDocumentSite(this,pIOleClientSite_HTML_Host);
-
-   HRESULT rc = CoCreateInstance(CLSID_WebBrowser,NULL,CLSCTX_INPROC_SERVER,IID_IWebBrowser2,reinterpret_cast<void **>(&pIWebBrowser));
-
-   if ( S_OK != rc ) {
-      MessageBox(NULL,L"The PDFium Control needs to use the Microsoft IE embedded ActiveX Control\n\n"
-                        L"This component is part of Microsoft Internet Explorer.\n\n"
-                        L"Is IE Installed on your system ?",L"Error!",MB_ICONEXCLAMATION);
-      return;
+   if ( pIOleObject_MSHTML ) {
+      pIOleObject_MSHTML -> SetClientSite(NULL);
+      pIOleObject_MSHTML -> Release();
+      pIOleObject_MSHTML = NULL;
    }
 
-   rc = pIWebBrowser -> put_Resizable(TRUE);
-
-   pIWebBrowser -> put_RegisterAsDropTarget(TRUE);
-
-   pIWebBrowser -> QueryInterface(IID_IOleObject,reinterpret_cast<void **>(&pIOleObject_MSHTML));
-
-   pIOleObject_MSHTML -> QueryInterface(IID_IOleInPlaceObject,reinterpret_cast<void **>(&pIOleInPlaceObject_MSHTML));
-
-   pIOleObject_MSHTML -> SetClientSite(pIOleClientSite_HTML_Host);
-
-   pDWebBrowserEvents_HTML_Host = new _DWebBrowserEvents2(this);
-
-   IUnknown *pIUnknown = NULL;
-
-   pDWebBrowserEvents_HTML_Host -> QueryInterface(IID_IUnknown,reinterpret_cast<void **>(&pIUnknown));
-
-   IConnectionPointContainer *pIConnectionPointContainer = NULL;
-
-   pIWebBrowser -> QueryInterface(IID_IConnectionPointContainer,reinterpret_cast<void**>(&pIConnectionPointContainer));
-
-   if ( pIConnectionPointContainer ) {
-      pIConnectionPointContainer -> FindConnectionPoint(DIID_DWebBrowserEvents2,&pIConnectionPoint_HTML);
-      if ( pIConnectionPoint_HTML ) 
-         pIConnectionPoint_HTML -> Advise(pIUnknown,&connectionCookie_HTML);
-      pIConnectionPointContainer -> Release();
+   if ( pIOleInPlaceObject_MSHTML ) {
+      pIOleInPlaceObject_MSHTML -> Release();
+      pIOleInPlaceObject_MSHTML = NULL;
    }
 
-   pIUnknown -> Release();
+   if ( pIOleInPlaceActiveObject_MSHTML ) {
+      pIOleInPlaceActiveObject_MSHTML -> Release();
+      pIOleInPlaceActiveObject_MSHTML = NULL;
+   }
+
+   if ( pIWebBrowser ) {
+      pIWebBrowser -> Release();
+      pIWebBrowser = NULL;
+   }
 
    return;
    }

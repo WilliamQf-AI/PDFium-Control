@@ -68,13 +68,9 @@
    }
 
    unsigned long __stdcall PDFiumControl::_IOleObject::AddRef() {
-   return ++refCount;
+   return pParent -> AddRef();
    }
  
    unsigned long __stdcall PDFiumControl::_IOleObject::Release() {
-   if ( 1 == refCount ) {
-      delete this;
-      return 0;
-   }
-   return --refCount;
+   return pParent -> Release();
    }

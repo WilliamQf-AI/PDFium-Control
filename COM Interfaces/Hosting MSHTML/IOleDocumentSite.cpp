@@ -9,10 +9,6 @@
 
    *ppv = NULL;
 
-   if ( IID_IUnknown == riid ) 
-      *ppv = static_cast<IUnknown *>(this);
-   else
-
    if ( IID_IOleDocumentSite == riid ) 
       *ppv = static_cast<IOleDocumentSite *>(this);
    else
@@ -25,11 +21,11 @@
    }
 
    unsigned long __stdcall PDFiumControl::_IOleDocumentSite::AddRef() {
-   return ++refCount;
+   return pParent -> AddRef();
    }
 
    unsigned long __stdcall PDFiumControl::_IOleDocumentSite::Release() {
-   return --refCount;
+   return pParent -> Release();
    }
 
 

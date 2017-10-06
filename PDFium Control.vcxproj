@@ -204,7 +204,6 @@ regsvr32 /s /c "$(TargetPath)"</Command>
     <ClCompile Include="calcDimensions.cpp" />
     <ClCompile Include="COM Implementation\dllMain.cpp" />
     <ClCompile Include="COM Interfaces\Being Hosted\IDataObject.cpp" />
-    <ClCompile Include="COM Interfaces\Being Hosted\initialize.cpp" />
     <ClCompile Include="COM Interfaces\Being Hosted\IOleControl.cpp" />
     <ClCompile Include="COM Interfaces\Being Hosted\IOleInPlaceActiveObject.cpp" />
     <ClCompile Include="COM Interfaces\Being Hosted\IOleInPlaceObject.cpp" />
@@ -224,7 +223,7 @@ regsvr32 /s /c "$(TargetPath)"</Command>
     <ClCompile Include="COM Interfaces\COM Events\IConnectionPoint.cpp" />
     <ClCompile Include="COM Interfaces\COM Events\IConnectionPointContainer.cpp" />
     <ClCompile Include="COM Interfaces\COM Events\IEnumConnectionPoints.cpp" />
-    <ClCompile Include="COM Interfaces\COM Events\IEnumerateConnections.cpp" />
+    <ClCompile Include="COM Interfaces\COM Events\IEnumConnections.cpp" />
     <ClCompile Include="COM Interfaces\Hosting MSHTML\DWebBrowserEvents.cpp" />
     <ClCompile Include="COM Interfaces\Hosting MSHTML\IElementBehavior.cpp" />
     <ClCompile Include="COM Interfaces\Hosting MSHTML\IElementBehaviorFactory.cpp" />

@@ -9,10 +9,6 @@
 
    *ppv = NULL;
 
-   if ( IID_IUnknown == riid ) 
-      *ppv = static_cast<IUnknown *>(this);
-   else
-
    if ( IID_IOleInPlaceFrame == riid ) 
       *ppv = static_cast<IOleInPlaceFrame *>(this);
    else
@@ -24,10 +20,10 @@
    return S_OK;
    }
    unsigned long __stdcall PDFiumControl::_IOleInPlaceFrame::AddRef() {
-   return ++refCount;
+   return pParent -> AddRef();
    }
    unsigned long __stdcall PDFiumControl::_IOleInPlaceFrame::Release() {
-   return --refCount;
+   return pParent -> Release();
    }
 
 

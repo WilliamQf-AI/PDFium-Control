@@ -131,9 +131,6 @@
     <ClCompile Include="COM Interfaces\Being Hosted\IViewObject.cpp">
       <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
     </ClCompile>
-    <ClCompile Include="COM Interfaces\Being Hosted\initialize.cpp">
-      <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
-    </ClCompile>
     <ClCompile Include="COM Interfaces\Hosting MSHTML\DWebBrowserEvents.cpp">
       <Filter>Source Files\COM Interfaces\Hosting MSHTML\COM Events</Filter>
     </ClCompile>
@@ -144,9 +141,6 @@
       <Filter>Source Files\COM Interfaces\COM Events</Filter>
     </ClCompile>
     <ClCompile Include="COM Interfaces\COM Events\IEnumConnectionPoints.cpp">
-      <Filter>Source Files\COM Interfaces\COM Events</Filter>
-    </ClCompile>
-    <ClCompile Include="COM Interfaces\COM Events\IEnumerateConnections.cpp">
       <Filter>Source Files\COM Interfaces\COM Events</Filter>
     </ClCompile>
     <ClCompile Include="COM Interfaces\IDispatch.cpp">
@@ -172,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="COM Interfaces\Hosting MSHTML\IHTMLPainter.cpp">
       <Filter>Source Files\COM Interfaces\Hosting MSHTML</Filter>
+    </ClCompile>
+    <ClCompile Include="COM Interfaces\COM Events\IEnumConnections.cpp">
+      <Filter>Source Files\COM Interfaces\COM Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

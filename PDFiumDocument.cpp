@@ -6,7 +6,7 @@
    PDFiumControl::PDFiumDocument::PDFiumDocument(PDFiumControl *pp,FPDF_DOCUMENT pDoc) : 
       refCount(1), pParent(pp), pDocumentObject(pDoc), pagePDFDimensions(), pagePDFLocations(), pagePixelDimensions(), pagePixelLocations()
    {
-   CoCreateGuid(&id);
+
    return;
    };
 

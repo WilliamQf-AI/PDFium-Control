@@ -48,7 +48,9 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
       STDMETHOD(GetIDsOfNames)(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgdispid);
       STDMETHOD(Invoke)(DISPID dispidMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pdispparams, VARIANT *pvarResult, EXCEPINFO *pexcepinfo, UINT *puArgErr);
 
-      void Initialize(HWND hwndParent);
+      void InitializeMSHTML();
+
+      void ReleaseMSHTML();
 
       void SetDefaults();
 
@@ -108,9 +110,9 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
 
       STDMETHOD(ConvertPointsToScrollPanePixels)(long pageNumber,RECT *pRect);
 
-      STDMETHOD(OpenDocument)(BSTR pdfFileName,GUID *pIPDFiumDocumentId);
+      STDMETHOD(OpenDocument)(BSTR pdfFileName);
 
-      STDMETHOD(CloseDocument)(GUID *pIPDFiumDocumentId);
+      STDMETHOD(CloseDocument)();
 
       STDMETHOD(DisplayDocument)(COLORREF backgroundColor,long cxImagePixels,long cyImagePixels,BSTR pdfOrHTMLFileName,long pageNumber);
 
@@ -119,6 +121,8 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
       STDMETHOD(PrintCurrentDocument)(BOOL showPrinterSelection);
 
       STDMETHOD(PrintDocument)(BSTR documentName,BOOL showPrinterSelection);
+
+      STDMETHOD(FinalRelease)();
 
       STDMETHOD(Cleanup)();
 
@@ -175,17 +179,14 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
          STDMETHOD(get_PDFPageHeightPoints)(long pageNumber,long *pHeight);
          STDMETHOD(put_PDFPageHeightPoints)(long pageNumber,long cy);
 
-         GUID *GetId() { return &id; };
-
          STDMETHOD(ConvertPointsToScrollPanePixels)(long pageNumber,RECT *pRect);
 
 
       private:
    
          PDFiumControl *pParent{NULL};
-         FPDF_DOCUMENT pDocumentObject;
+         FPDF_DOCUMENT pDocumentObject{NULL};
          UINT refCount{0};
-         GUID id;
 
          int pageCount{0};
 
@@ -197,8 +198,6 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
          static std::list<WCHAR *> imageFiles;
 
       };
-
-      STDMETHOD(FindDocument)(GUID *pDocumentId,PDFiumControl::PDFiumDocument **ppPDFiumDocument);
 
       // IPDFiumControl_IAcroAXDocShim
 
@@ -333,72 +332,81 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
          STDMETHOD (Unadvise)(DWORD);
          STDMETHOD (EnumConnections)(IEnumConnections **ppEnum);
 
-	      IUnknown *AdviseSink() { return adviseSink; };
+         IUnknown *AdviseSink() { return adviseSink; };
+
+         int CountLiveConnections() { return countLiveConnections; };
+
+         CONNECTDATA *ConnectionData() { return pConnections; };
+
+         struct _IEnumConnections : public IEnumConnections {
+
+         public:
+
+            _IEnumConnections(_IConnectionPoint *pParent);
+            ~_IEnumConnections();
+
+            STDMETHOD(QueryInterface)(REFIID, void **);
+            STDMETHODIMP_(ULONG) AddRef();
+            STDMETHODIMP_(ULONG) Release();
+            STDMETHOD(Next)(ULONG, CONNECTDATA*, ULONG*);
+            STDMETHOD(Skip)(ULONG);
+            STDMETHOD(Reset)();
+            STDMETHOD(Clone)(IEnumConnections**);
+
+         private:
+
+            _IConnectionPoint *pParent{NULL};
+            ULONG enumeratorIndex{0};
+
+            } *pEnumConnections{NULL};
 
       private:
 
          int getSlot();
          int findSlot(DWORD dwCookie);
 
-	      IUnknown *adviseSink;
-	      PDFiumControl *pParent;
-         DWORD nextCookie;
-	      int countConnections,countLiveConnections;
+	      IUnknown *adviseSink{NULL};
+	      PDFiumControl *pParent{NULL};
+         DWORD nextCookie{400};
+	      int countConnections{0};
+         int countLiveConnections{0};
 
-         CONNECTDATA *connections;
+         CONNECTDATA *pConnections{NULL};
 
          IID eventsInterfaceId;
 
       } connectionPoint_IPropertyNotifySink,connectionPoint_DWebBrowserEvents2,connectionPoint_IPDFiumControlEvents;
 
-	  struct _IEnumConnectionPoints : IEnumConnectionPoints {
+	   struct _IEnumConnectionPoints : IEnumConnectionPoints {
 
-	  public:
+	   public:
 
-        STDMETHOD (QueryInterface)(REFIID riid,void **ppv);
-        STDMETHOD_ (ULONG, AddRef)();
-        STDMETHOD_ (ULONG, Release)();
+	      _IEnumConnectionPoints(PDFiumControl *pp,_IConnectionPoint **,int connectionPointCount);
 
- 	     STDMETHOD (Next)(ULONG cConnections,IConnectionPoint **rgpcn,ULONG *pcFetched);
-        STDMETHOD (Skip)(ULONG cConnections);
-        STDMETHOD (Reset)();
-        STDMETHOD (Clone)(IEnumConnectionPoints **);
+         ~_IEnumConnectionPoints();
 
-	     _IEnumConnectionPoints(PDFiumControl *pp,_IConnectionPoint **cp,int connectionPointCount);
-       ~_IEnumConnectionPoints();
+         STDMETHOD (QueryInterface)(REFIID riid,void **ppv);
+         STDMETHOD_ (ULONG, AddRef)();
+         STDMETHOD_ (ULONG, Release)();
 
-     private:
-
-        int cpCount,enumeratorIndex;
-		  PDFiumControl *pParent;
-		  _IConnectionPoint **connectionPoints;
-
-     } *pEnumConnectionPoints{NULL};
-
-     struct _IEnumerateConnections : public IEnumConnections {
-
-     public:
-
-        _IEnumerateConnections(IUnknown* pParentUnknown,ULONG cConnections,CONNECTDATA* paConnections,ULONG initialIndex);
-        ~_IEnumerateConnections();
-
-         STDMETHOD(QueryInterface)(REFIID, void **);
-         STDMETHODIMP_(ULONG) AddRef();
-         STDMETHODIMP_(ULONG) Release();
-         STDMETHOD(Next)(ULONG, CONNECTDATA*, ULONG*);
-         STDMETHOD(Skip)(ULONG);
-         STDMETHOD(Reset)();
-         STDMETHOD(Clone)(IEnumConnections**);
+ 	      STDMETHOD (Next)(ULONG cConnections,IConnectionPoint **rgpcn,ULONG *pcFetched);
+         STDMETHOD (Skip)(ULONG cConnections);
+         STDMETHOD (Reset)();
+         STDMETHOD (Clone)(IEnumConnectionPoints **);
 
       private:
 
-        ULONG refCount;
-        IUnknown *pParentUnknown;
-        ULONG enumeratorIndex;
-        ULONG countConnections;
-        CONNECTDATA *connections;
+         int cpCount,enumeratorIndex;
+		   PDFiumControl *pParent;
+		   _IConnectionPoint **connectionPoints;
 
-      } *pEnumConnections{NULL};
+      } *pEnumConnectionPoints{NULL};
+
+
+#ifdef EMBEDDED_OBJECT_EMBEDDER_CLASS
+#undef EMBEDDED_OBJECT_EMBEDDER_CLASS
+#endif
+#define EMBEDDED_OBJECT_EMBEDDER_CLASS PDFiumControl
 
 #include "interfacesToSupportAnEmbeddedObject.h"
 
@@ -529,8 +537,8 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
       IOleObject *pIOleObject_MSHTML{NULL};
       IOleInPlaceActiveObject *pIOleInPlaceActiveObject_MSHTML{NULL};
 
-      IConnectionPoint *pIConnectionPoint_HTML{NULL};
-      DWORD connectionCookie_HTML{0L};
+      IConnectionPoint *pIConnectionPoint_MSHTML{NULL};
+      DWORD connectionCookie_MSHTML{0L};
 
       HWND hwndExplorer{NULL};
 
@@ -571,7 +579,7 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
       long scrollHeight{0};
       long cyClient{0};
 
-      PDFiumDocument *pPDFiumDocument_Current{NULL};
+      PDFiumDocument *pPDFiumDocument{NULL};
 
       long maxVisiblePage{0};
       long clientRequestedPageNumber{0};
@@ -587,8 +595,6 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
       BOOL isPDF;
 
       ULONG refCount;
-
-      std::list<PDFiumDocument *> openedDocuments;
 
       static std::map<HWND,PDFiumControl *> explorerObjectMap;
 

@@ -42,9 +42,7 @@
      
       STDMETHOD(SetColorScheme)(LPLOGPALETTE lpLogpal);
 
-      PDFiumControl *pParent;
-
-      long refCount;
+      PDFiumControl *pParent{NULL};
 
       // IDataObject
 
@@ -394,7 +392,7 @@
 
    private:
 
-      void initialize();
+      //void initialize();
 
       //
       // Items necessary for being hosted.
@@ -418,5 +416,7 @@
       bool isRunning;
 
       static LRESULT CALLBACK propertiesHandler(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam);
+
+      friend class PDFiumControl;
 
    } *pIOleObject{NULL};

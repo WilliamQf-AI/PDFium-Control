@@ -83,10 +83,10 @@
    if ( ! pX )
       return E_POINTER;
 
-   if ( ! pPDFiumDocument_Current )
+   if ( ! pPDFiumDocument )
       return E_UNEXPECTED;
    
-   return pPDFiumDocument_Current -> get_PDFPageXPixels(pageNumber,pX);
+   return pPDFiumDocument -> get_PDFPageXPixels(pageNumber,pX);
    }
 
    HRESULT __stdcall PDFiumControl::get_PDFPageXPixelsInView(long pageNumber,long *pX) {
@@ -94,10 +94,10 @@
    if ( ! pX )
       return E_POINTER;
 
-   if ( ! pPDFiumDocument_Current )
+   if ( ! pPDFiumDocument )
       return E_UNEXPECTED;
    
-   return pPDFiumDocument_Current -> get_PDFPageXPixelsInView(pageNumber,pX);
+   return pPDFiumDocument -> get_PDFPageXPixelsInView(pageNumber,pX);
    }
 
    HRESULT __stdcall PDFiumControl::get_PDFPageYPixels(long pageNumber,long *pY) {
@@ -105,10 +105,10 @@
    if ( ! pY )
       return E_POINTER;
 
-   if ( ! pPDFiumDocument_Current )
+   if ( ! pPDFiumDocument )
       return E_UNEXPECTED;
    
-   return pPDFiumDocument_Current -> get_PDFPageYPixels(pageNumber,pY);
+   return pPDFiumDocument -> get_PDFPageYPixels(pageNumber,pY);
    }
 
    HRESULT __stdcall PDFiumControl::get_PDFPageYPixelsInView(long pageNumber,long *pY) {
@@ -116,10 +116,10 @@
    if ( ! pY )
       return E_POINTER;
 
-   if ( ! pPDFiumDocument_Current )
+   if ( ! pPDFiumDocument )
       return E_UNEXPECTED;
    
-   return pPDFiumDocument_Current -> get_PDFPageYPixelsInView(pageNumber,pY);
+   return pPDFiumDocument -> get_PDFPageYPixelsInView(pageNumber,pY);
    }
 
    HRESULT __stdcall PDFiumControl::get_PDFPageWidthPixels(long pageNumber,long *pWidth) {
@@ -127,10 +127,10 @@
    if ( ! pWidth )
       return E_POINTER;
 
-   if ( ! pPDFiumDocument_Current )
+   if ( ! pPDFiumDocument )
       return E_UNEXPECTED;
    
-   return pPDFiumDocument_Current -> get_PDFPageWidthPixels(pageNumber,pWidth);
+   return pPDFiumDocument -> get_PDFPageWidthPixels(pageNumber,pWidth);
    }
 
    HRESULT __stdcall PDFiumControl::get_PDFPageHeightPixels(long pageNumber,long *pHeight) {
@@ -138,10 +138,10 @@
    if ( ! pHeight )
       return E_POINTER;
 
-   if ( ! pPDFiumDocument_Current )
+   if ( ! pPDFiumDocument )
       return E_UNEXPECTED;
    
-   return pPDFiumDocument_Current -> get_PDFPageHeightPixels(pageNumber,pHeight);
+   return pPDFiumDocument -> get_PDFPageHeightPixels(pageNumber,pHeight);
    }
 
 
@@ -150,10 +150,10 @@
    if ( ! pX )
       return E_POINTER;
 
-   if ( ! pPDFiumDocument_Current )
+   if ( ! pPDFiumDocument )
       return E_UNEXPECTED;
    
-   return pPDFiumDocument_Current -> get_PDFPageXPoints(pageNumber,pX);
+   return pPDFiumDocument -> get_PDFPageXPoints(pageNumber,pX);
    }
 
    HRESULT __stdcall PDFiumControl::get_PDFPageYPoints(long pageNumber,long *pY) {
@@ -161,10 +161,10 @@
    if ( ! pY )
       return E_POINTER;
 
-   if ( ! pPDFiumDocument_Current )
+   if ( ! pPDFiumDocument )
       return E_UNEXPECTED;
    
-   return pPDFiumDocument_Current -> get_PDFPageYPoints(pageNumber,pY);
+   return pPDFiumDocument -> get_PDFPageYPoints(pageNumber,pY);
    }
 
    HRESULT __stdcall PDFiumControl::get_PDFPageWidthPoints(long pageNumber,long *pWidth) {
@@ -172,10 +172,10 @@
    if ( ! pWidth )
       return E_POINTER;
 
-   if ( ! pPDFiumDocument_Current )
+   if ( ! pPDFiumDocument )
       return E_UNEXPECTED;
    
-   return pPDFiumDocument_Current -> get_PDFPageWidthPoints(pageNumber,pWidth);
+   return pPDFiumDocument -> get_PDFPageWidthPoints(pageNumber,pWidth);
    }
 
    HRESULT __stdcall PDFiumControl::get_PDFPageHeightPoints(long pageNumber,long *pHeight) {
@@ -183,10 +183,10 @@
    if ( ! pHeight )
       return E_POINTER;
 
-   if ( ! pPDFiumDocument_Current )
+   if ( ! pPDFiumDocument )
       return E_UNEXPECTED;
    
-   return pPDFiumDocument_Current -> get_PDFPageHeightPoints(pageNumber,pHeight);
+   return pPDFiumDocument -> get_PDFPageHeightPoints(pageNumber,pHeight);
    }
 
    HRESULT __stdcall PDFiumControl::put_Document(BSTR newDocumentName) {
@@ -264,14 +264,11 @@
 
 
    HRESULT __stdcall PDFiumControl::ConvertPointsToScrollPanePixels(long pageNumber,RECT *pRect) {
-   return pPDFiumDocument_Current -> ConvertPointsToScrollPanePixels(pageNumber,pRect);
+   return pPDFiumDocument -> ConvertPointsToScrollPanePixels(pageNumber,pRect);
    }
 
 
-   HRESULT __stdcall PDFiumControl::OpenDocument(BSTR pdfFileName,GUID *pIPDFiumDocumentId) {
-
-   if ( ! pIPDFiumDocumentId )
-      return E_POINTER;
+   HRESULT __stdcall PDFiumControl::OpenDocument(BSTR pdfFileName) {
 
    char szFileName[MAX_PATH];
 
@@ -284,67 +281,32 @@
    if ( NULL == theDocument )
       return E_FAIL;
 
-   if ( pPDFiumDocument_Current )
-      delete pPDFiumDocument_Current;
+   if ( pPDFiumDocument ) 
+      delete pPDFiumDocument;
 
-   pPDFiumDocument_Current = new PDFiumDocument(this,theDocument);
-
-   openedDocuments.push_back(pPDFiumDocument_Current);
-
-   *pIPDFiumDocumentId = *(pPDFiumDocument_Current -> GetId());
+   pPDFiumDocument = new PDFiumDocument(this,theDocument);
 
    return S_OK;
    }
 
 
-   HRESULT __stdcall PDFiumControl::CloseDocument(GUID *pIPDFiumDocumentId) {
+   HRESULT __stdcall PDFiumControl::CloseDocument() {
 
-   if ( 0 == openedDocuments.size() )
+   if ( ! pPDFiumDocument )
       return E_FAIL;
 
-   std::list<PDFiumDocument *> toRemove;
+   delete pPDFiumDocument;
 
-   for ( PDFiumDocument *p : openedDocuments ) {
-      if ( ( NULL == pIPDFiumDocumentId ) || *(p -> GetId()) == *pIPDFiumDocumentId ) {
-         p -> Release();
-         if ( p == pPDFiumDocument_Current )
-            pPDFiumDocument_Current = NULL;
-         toRemove.push_back(p);
-         if ( ! ( NULL == pIPDFiumDocumentId ) ) {
-            openedDocuments.remove(p);
-            return S_OK;
-         }
-      }
-   }
-
-   for ( PDFiumDocument *p : toRemove )
-      openedDocuments.remove(p);
-
-   toRemove.clear();
-
-   if ( ! ( NULL == pIPDFiumDocumentId ) )
-      return E_FAIL;
-
-   pPDFiumDocument_Current = NULL;
+   pPDFiumDocument = NULL;
 
    return S_OK;
-   }
-
-
-   HRESULT __stdcall PDFiumControl::FindDocument(GUID *pDocumentId,PDFiumDocument **ppPDFiumDocument) {
-
-   for ( std::list<PDFiumDocument *>::iterator it = openedDocuments.begin(); it != openedDocuments.end(); it++ ) {
-      if ( *((*it) -> GetId()) == *pDocumentId ) {
-         *ppPDFiumDocument = (*it);
-         return S_OK;
-      }
-   }
-
-   return E_FAIL;
    }
 
 
    HRESULT __stdcall PDFiumControl::DisplayDocument(COLORREF passedBackgroundColor,long cxImagePixels,long cyImagePixels,BSTR pdfOrHTMLFileName,long pageNumber) {
+
+   if ( ! pIWebBrowser )
+      InitializeMSHTML();
 
    FILE *fDocument = _wfopen(pdfOrHTMLFileName,L"rb");
 
@@ -381,13 +343,11 @@
 
       isPDF = TRUE;
 
-      GUID docId = GUID_NULL;
-
-      OpenDocument(pdfOrHTMLFileName,&docId);
+      OpenDocument(pdfOrHTMLFileName);
 
       swprintf_s(szwTemporaryDocumentName,MAX_PATH,L"%ls",_wtempnam(NULL,NULL));
 
-      pPDFiumDocument_Current -> GenerateHTML(backgroundColor,cxPDFWidth,cyPDFHeight,szwTemporaryDocumentName);
+      pPDFiumDocument -> GenerateHTML(backgroundColor,cxPDFWidth,cyPDFHeight,szwTemporaryDocumentName);
 
       fclose(fDocument);
 
@@ -500,7 +460,6 @@
    } else {
 
       HRESULT rc = pIWebBrowser -> ExecWB(OLECMDID_PRINT,showPrinterSelection ? OLECMDEXECOPT_PROMPTUSER : OLECMDEXECOPT_DONTPROMPTUSER,NULL,NULL);
-printf("\nhello world");
 
    }
 
@@ -517,6 +476,13 @@ printf("\nhello world");
    return S_OK;
    }
 
+   HRESULT __stdcall PDFiumControl::FinalRelease() {
+
+   while ( Release() ) ;
+
+   return S_OK;
+   }
+
 
    HRESULT __stdcall PDFiumControl::Cleanup() {
 
@@ -526,12 +492,10 @@ printf("\nhello world");
       hwndExplorer = NULL;
    }
 
-   for ( PDFiumDocument *pDocument : openedDocuments ) 
-      pDocument -> Release();
+   if ( pPDFiumDocument )
+      delete pPDFiumDocument;
 
-   openedDocuments.clear();
-
-   pPDFiumDocument_Current = NULL;
+   pPDFiumDocument = NULL;
 
    if ( ( 0 == countInstances ) && ( 0 < pdfiumConfig.version ) ) {
       FPDF_DestroyLibrary();

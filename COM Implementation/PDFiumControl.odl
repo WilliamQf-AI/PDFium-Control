@@ -78,9 +78,9 @@ library PDFiumControl {
       [helpstring("Convert the PDF coordinates (points) into pixels in the entire MSHTML window space, which is scrollable with a height great enough to fit the entire document.")]
       HRESULT ConvertPointsToScrollPanePixels(long pageNumber,RECT *pRect);
 
-      HRESULT OpenDocument(BSTR documentFileName,GUID *pDocumentID);
+      HRESULT OpenDocument(BSTR documentFileName);
 
-      HRESULT CloseDocument(GUID *pDocumentID);
+      HRESULT CloseDocument();
 
       [helpstring("Color, size, and pageNumber values are ignored for non-PDF documents")]
       HRESULT DisplayDocument(COLORREF backgroundColor,long cxImagePixels,long cyImagePixels,BSTR pdfOrHTMLFileName,long pageNumber);
@@ -90,6 +90,9 @@ library PDFiumControl {
       HRESULT PrintCurrentDocument(BOOL showPrinterSelection);
 
       HRESULT PrintDocument(BSTR pdfOrHTMLFileName,BOOL showPrinterSelection);
+
+      [helpstring("This method releases the object and deletes it. It is currently necessary because IWebBrowser2.Navigate is causing an AddRef I can't track down (as does DoVerb on the MSHTML IOleObject)")]
+      HRESULT FinalRelease();
 
       HRESULT Cleanup();
 

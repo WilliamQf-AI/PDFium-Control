@@ -1,7 +1,6 @@
 
 #include "PDFiumControl.h"
 
-
 #define NORMALIZE_PAGE_NUMBER(pn)   \
    long pageIndex = pn;             \
    if ( 0 == pageIndex ) {          \
