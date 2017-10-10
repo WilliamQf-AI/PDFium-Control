@@ -61,11 +61,12 @@
 
       pPDFiumDocument -> get_PDFPageHeightPoints(k + 1,&cyPoints);
 
-      double scalePixelsToPoints = (double)cxPoints / (double) cx;
+      //double scalePixelsToPoints = (double)cxPoints / (double) cx;
+      double scalePixelsToPoints = (double)cyPoints / (double) cy;
 
       pPDFiumDocument -> put_PDFPageXPoints(k + 1,(long)((double)x * scalePixelsToPoints));
 
-      scalePixelsToPoints = (double)cyPoints / (double) cy;
+      //scalePixelsToPoints = (double)cyPoints / (double) cy;
 
       pPDFiumDocument -> put_PDFPageYPoints(k + 1,(long)((double)y * scalePixelsToPoints));
 
