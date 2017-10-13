@@ -123,42 +123,23 @@
 
       for ( int k = 0; k < currentPDFPageCount; k++ ) {
 
-         IHTMLElement *pIHTMLElement = NULL;
+         long y,cy;
 
-         WCHAR szwId[32];
+         pPDFiumDocument -> get_PDFPageYPixels(k + 1,&y);
 
-         swprintf_s(szwId,32,L"page%d",k + 1);
+         y -= scrollTop;
 
-         pIWebBrowserDocument -> getElementById(szwId,&pIHTMLElement);
+         pPDFiumDocument -> get_PDFPageHeightPixels(k + 1,&cy);
 
-         if ( NULL == pIHTMLElement )
+         if ( y + cy < values[j] ) 
             continue;
 
-         long x,y,cx,cy;
-
-         pIHTMLElement -> get_offsetTop(&y);
-
-         pIHTMLElement -> get_offsetHeight(&cy);
-
-         pIHTMLElement -> get_offsetLeft(&x);
-
-         pIHTMLElement -> get_offsetWidth(&cx);
-
-         pIHTMLElement -> Release();
-
-         if ( isInView(y,cy) ) {
-
-            if ( y > scrollTop )
-               y -= scrollTop;
-            else
-               y = 0;
-
-            if ( y < values[j] && y + cy > values[j] )
-               return k + 1;
-
-         }
+         return k + 1;
 
       }
+
+      if ( 0 == seekHeight )
+         break;
 
    }
 

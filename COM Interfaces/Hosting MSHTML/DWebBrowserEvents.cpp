@@ -74,7 +74,6 @@
 
       pParent -> pDocumentElement = NULL;
 
-#if 1
       if ( pParent -> pIElementBehaviorFactory )
          delete pParent -> pIElementBehaviorFactory;
 
@@ -89,8 +88,6 @@
          delete pParent -> pIHTMLPainter;
       
       pParent -> pIHTMLPainter = NULL;
-
-#endif
 
       IDispatch *pIDispatch = NULL;
 
@@ -107,15 +104,12 @@
 
          if ( pIHTMLElement ) {
 
-#if 1
             pParent -> pIElementBehaviorFactory = new _IElementBehaviorFactory(pParent);
             pParent -> pIElementBehavior = new _IElementBehavior(pParent);
             pParent -> pIHTMLPainter = new _IHTMLPainter(pParent);
-#endif
 
             pIHTMLElement -> QueryInterface(IID_IHTMLElement2,reinterpret_cast<void **>(&pParent -> pDocumentElement));
 
-#if 1
             IUnknown *pIUnknown = NULL;
 
             pParent -> pIElementBehaviorFactory -> QueryInterface(IID_IUnknown,reinterpret_cast<void **>(&pIUnknown));
@@ -128,7 +122,6 @@
             HRESULT rc = pParent -> pDocumentElement -> addBehavior(L"Paint",&v,&pParent -> pIElementBehaviorFactory -> dwCookie);
 
             pIUnknown -> Release();
-#endif
 
             pIHTMLElement -> QueryInterface(IID_IHTMLBodyElement,reinterpret_cast<void **>(&pParent -> pIHTMLBodyElement));
 
@@ -168,15 +161,6 @@
                SetWindowLongPtr(pParent -> hwndExplorer,GWLP_WNDPROC,(LONG_PTR)explorerHandler);
 
       }
-
-#if 0
-      pParent -> ignoreDocumentOpenInWebBrowser = false;
-
-      if ( ! pParent -> ignoreDocumentOpenProcessingSteps )
-         PostMessage(hwndMainFrame,WM_DOCUMENT_IS_OPENED,0L,0L);
-      else
-         pParent -> ignoreDocumentOpenProcessingSteps = false;
-#endif
 
       break;
       }

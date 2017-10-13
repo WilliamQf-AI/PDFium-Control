@@ -88,7 +88,7 @@
    }
  
  
-   STDMETHODIMP PDFiumControl::_IOleObject::DoVerb(LONG iVerb, LPMSG ,IOleClientSite *pClientSite, LONG,HWND hwndParent,LPCRECT lprcPosRect) {
+   STDMETHODIMP PDFiumControl::_IOleObject::DoVerb(LONG iVerb, LPMSG pMsg,IOleClientSite *pClientSite, LONG,HWND hwndParent,LPCRECT lprcPosRect) {
 
    switch ( iVerb ) {
    case OLEIVERB_PRIMARY:
@@ -119,6 +119,13 @@
    default:
       break;
    }
+
+#if 1
+   if ( ! pParent -> pIWebBrowser )
+      pParent -> InitializeMSHTML();
+
+   pParent -> pIOleObject_MSHTML -> DoVerb(iVerb,pMsg,pClientSite,0,hwndParent,lprcPosRect);
+#endif
 
    return S_OK;
    }

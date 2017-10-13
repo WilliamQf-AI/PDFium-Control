@@ -40,14 +40,8 @@
    if ( NULL == paConnections ) 
       return E_POINTER;
 
-   for ( cRet = 0; enumeratorIndex < pParent -> CountLiveConnections() && cReq > 0; paConnections++, enumeratorIndex++, cRet++, cReq-- ) {
-
+   for ( cRet = 0; enumeratorIndex < (ULONG)pParent -> CountLiveConnections() && cReq > 0; paConnections++, enumeratorIndex++, cRet++, cReq-- ) 
       *paConnections = pParent -> ConnectionData()[enumeratorIndex];
-
-      //if ( paConnections -> pUnk ) 
-      //   paConnections -> pUnk -> AddRef();
-
-   }
 
    if ( ! ( NULL == pcEnumerated ) )
       *pcEnumerated = cRet;
@@ -57,7 +51,7 @@
 
 
    STDMETHODIMP PDFiumControl::_IConnectionPoint::_IEnumConnections::Skip(ULONG cSkip) {
-   if ( ( enumeratorIndex + cSkip ) < pParent -> CountLiveConnections() ) 
+   if ( ( enumeratorIndex + cSkip ) < (ULONG)pParent -> CountLiveConnections() ) 
       return S_FALSE;
    enumeratorIndex += cSkip;
    return S_OK;
