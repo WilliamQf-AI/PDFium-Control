@@ -15,6 +15,14 @@ There are a large number of classes and source files here - however note careful
 
 What this project demonstrates is what ATL and MFC are essentially doing for you behind the scenes - but more importantly, what this project shows is how easy it is to bypass the over-complexity of BOTH ATL and MFC - and put the incredible power of ALL of COM directly at your fingertips. This also means that you can integrate COM into existing software without needing to change any object model, AND that you can create your object model how you see fit, it does not have to be built on top of any framework.
 
-### NOTE: To use this repository - please ALSO clone the Common Repository and put it somewhere where it is a sibling of where you put this one.
+### NOTE: To use this repository - please clone this one, AND the Common Repository at the root of some drive (so you will have a C:\Common and C:\PDFium-Control directory)
 
-#### For example, if you clone this repository to C:\PDFium-Control, then clone Common to C:\Common. When you do this, the PDFium-Control should build cleanly the very first time.
+At some point, I may create an environment variable to "home" these projects, but for now, the project inter-relations among them rely on "\Common" visibility (note the drive letter does not matter).
+
+All projects produce binary artifacts into "\Common\Artifacts\<configuration>\<platform>" 
+
+---
+
+Also, please navigate to the pdfium\lib\Debug\x64 (or similar location based on configuration and platform) directory, and unzip the pdfium.lib file in pdfium.zip to that location, It's a big lib file. At some point I will investigate removing components in it that aren't required for this project.
+
+---
