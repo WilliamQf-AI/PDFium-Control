@@ -3,6 +3,9 @@
 
    void PDFiumControl::calcDimensions() {
 
+   if ( ! pPDFiumDocument )
+      return;
+
    if ( ! pDocumentElement )
       return;
 

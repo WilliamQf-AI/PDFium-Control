@@ -1,8 +1,5 @@
 # InnoVisioNate PDFium Control
 
-## NOTE: To use this repository - please ALSO clone the Common Repository and put it somewhere where it is a sibling of where you put this one.
-
-### For example, if you clone this repository to C:\PDFium-Control, then clone Common to C:\Common. When you do this, the PDFium-Control should build cleanly the very first time.
 ---
 The PDFium Control object is an incredibly easy way to display __both__ PDF files AND HTML (or any file that Internet Explorer can display) in your windows application.
 
@@ -16,4 +13,8 @@ This control is written with RAW COM - it is a perfect example of how easy it is
 
 There are a large number of classes and source files here - however note carefully that these are mostly "boiler plate" - you can take these sources and turn just about anything into a real COM object very simply.
 
-What this project demonstrates is what ATL and MFC are essentially doing for you behind the scenes - but more importantly, what this project shows is how easy it is to toss out the over-complexity of BOTH ATL and MFC - and put the incredible power of ALL of COM directly at your fingertips.
+What this project demonstrates is what ATL and MFC are essentially doing for you behind the scenes - but more importantly, what this project shows is how easy it is to bypass the over-complexity of BOTH ATL and MFC - and put the incredible power of ALL of COM directly at your fingertips. This also means that you can integrate COM into existing software without needing to change any object model, AND that you can create your object model how you see fit, it does not have to be built on top of any framework.
+
+### NOTE: To use this repository - please ALSO clone the Common Repository and put it somewhere where it is a sibling of where you put this one.
+
+#### For example, if you clone this repository to C:\PDFium-Control, then clone Common to C:\Common. When you do this, the PDFium-Control should build cleanly the very first time.

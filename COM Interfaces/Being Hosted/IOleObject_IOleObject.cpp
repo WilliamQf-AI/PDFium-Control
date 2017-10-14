@@ -120,7 +120,7 @@
       break;
    }
 
-#if 1
+#if 0
    if ( ! pParent -> pIWebBrowser )
       pParent -> InitializeMSHTML();
 

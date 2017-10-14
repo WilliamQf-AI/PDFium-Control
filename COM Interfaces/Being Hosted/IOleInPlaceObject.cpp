@@ -30,7 +30,7 @@
    }
  
    STDMETHODIMP PDFiumControl::_IOleObject::_IOleInPlaceObject::InPlaceActivate() {
-   if ( pParent -> pIOleInPlaceSite_MySite -> CanInPlaceActivate() != S_OK ) 
+    if ( pParent -> pIOleInPlaceSite_MySite -> CanInPlaceActivate() != S_OK ) 
       return S_FALSE;
    pParent -> pIOleInPlaceSite_MySite -> OnInPlaceActivate();
    return S_OK;

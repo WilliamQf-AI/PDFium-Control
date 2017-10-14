@@ -394,34 +394,11 @@
 
    HRESULT __stdcall PDFiumControl::PrintDocument(BSTR documentName,BOOL showPrinterSelection) {
 
-#if 1
-
    wcscpy_s(szwPendingPrintDocumentName,MAX_PATH,documentName);
 
    pendingShowPrinterSelection = showPrinterSelection;
 
    DisplayDocument(0,0,0,documentName,0);
-
-#else
-   VARIANT target,vEmpty;
-
-   VariantInit(&vEmpty);
-   VariantInit(&target);
-
-   target.vt = VT_BSTR;
-   target.bstrVal = L"_self";
-
-   HRESULT rc = pIWebBrowser -> put_AddressBar(VARIANT_TRUE);
-
-   rc = pIWebBrowser -> put_FullScreen(VARIANT_FALSE);
-
-   rc = pIWebBrowser -> Navigate(documentName,&vEmpty,&target,&vEmpty,&vEmpty);
-
-   wcscpy_s(szwPendingPrintDocumentName,MAX_PATH,documentName);
-
-   pendingShowPrinterSelection = showPrinterSelection;
-
-#endif
 
    return S_OK;
    }
