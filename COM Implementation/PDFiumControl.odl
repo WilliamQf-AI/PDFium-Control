@@ -1,3 +1,6 @@
+// Copyright 2017 InnoVisioNate Inc. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import "ocidl.idl";
 
@@ -37,6 +40,8 @@ library PDFiumControl {
       [propget] HRESULT PDFHeight([out,retval] long *pcxPDFHeightInPixels);
 
       [propput] HRESULT EnableExplorerContextMenu([in] BOOL doEnable);
+
+      [propget] HRESULT PageCount([out,retval] long *pPageCount);
 
       [propget] HRESULT PDFPagesVisible([out,retval] BSTR *pPagesVisible);
 

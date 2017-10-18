@@ -1,3 +1,6 @@
+// Copyright 2017 InnoVisioNate Inc. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #include "PDFiumControl.h"
 
@@ -44,11 +47,22 @@
    }
 
    HRESULT __stdcall PDFiumControl::put_EnableExplorerContextMenu(BOOL doEnable) {
-
    enableExplorerContextMenu = doEnable;
-
    return S_OK;
    }
+
+
+   HRESULT __stdcall PDFiumControl::get_PageCount(long *pPageCount) {
+
+   if ( ! pPageCount )
+      return E_POINTER;
+
+   if ( ! pPDFiumDocument )
+      return E_UNEXPECTED;
+
+   return pPDFiumDocument -> get_PDFPageCount(pPageCount);
+   }
+
 
    HRESULT __stdcall PDFiumControl::get_PDFPagesVisible(BSTR *pPagesVisible) {
 

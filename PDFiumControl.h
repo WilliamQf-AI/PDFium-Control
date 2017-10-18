@@ -1,3 +1,7 @@
+// Copyright 2017 InnoVisioNate Inc. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #pragma once
 
 #include <windows.h>
@@ -72,6 +76,8 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
       STDMETHOD(get_PDFHeight)(long *pcyPDFHeight);
 
       STDMETHOD(put_EnableExplorerContextMenu)(BOOL doEnable);
+
+      STDMETHOD(get_PageCount)(long *pPageCount);
 
       STDMETHOD(get_PDFPagesVisible)(BSTR *pPagesVisible);
 
