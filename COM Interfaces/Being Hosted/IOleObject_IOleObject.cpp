@@ -74,7 +74,7 @@
       return S_OK;
    SIZEL tempSizel;
    RECT rect = {0,0,0,0};
-   hiMetricToPixel(pSizel,&tempSizel);
+   hiMetricToPixels(pSizel,&tempSizel);
    rect.right = tempSizel.cx;
    rect.bottom = tempSizel.cy;
    SetWindowPos(pParent -> hwndSite,HWND_TOP,0,0,rect.right - rect.left,rect.bottom - rect.top,SWP_NOMOVE);
@@ -86,7 +86,7 @@
  
    STDMETHODIMP PDFiumControl::_IOleObject::GetExtent(DWORD dwDrawAspect,SIZEL *pSizel) {
    memcpy(pSizel,&containerSize,sizeof(SIZEL));
-   pixelToHiMetric(pSizel,pSizel);
+   pixelsToHiMetric(pSizel,pSizel);
    return S_OK;
    }
  

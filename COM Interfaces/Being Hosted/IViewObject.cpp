@@ -158,7 +158,7 @@
    STDMETHODIMP PDFiumControl::_IOleObject::_IViewObjectEx::GetExtent(unsigned long,long,DVTARGETDEVICE *,struct tagSIZE *s) {
    s -> cx = pParent -> containerSize.cx;
    s -> cy = pParent -> containerSize.cy;
-   pixelToHiMetric(s,s);
+   pixelsToHiMetric(s,s);
    return S_OK;
    }
  
