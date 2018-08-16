@@ -322,10 +322,19 @@
    if ( ! pIWebBrowser )
       InitializeMSHTML();
 
+   VARIANT target,vEmpty;
+
+   VariantInit(&vEmpty);
+   VariantInit(&target);
+
    FILE *fDocument = _wfopen(pdfOrHTMLFileName,L"rb");
 
-   if ( NULL == fDocument )
+   if ( NULL == fDocument ) {
+      pIWebBrowser -> Navigate(pdfOrHTMLFileName,&vEmpty,&target,&vEmpty,&vEmpty);
+      pIOleInPlaceObject_MSHTML -> SetObjectRects(&rcHTMLHost,&rcHTMLHost);
+      pIOleObject_MSHTML -> DoVerb(OLEIVERB_SHOW,NULL,pIOleClientSite_HTML_Host,0,hwndSite,&rcHTMLHost);
       return E_FAIL;
+   }
 
    BYTE filePreamble[4];
 
@@ -375,11 +384,6 @@
 
    }
 
-   VARIANT target,vEmpty;
-
-   VariantInit(&vEmpty);
-   VariantInit(&target);
-
    target.vt = VT_BSTR;
    target.bstrVal = L"_self";
 
@@ -401,6 +405,52 @@
       return S_OK;
 
    clientRequestedPageNumber = pageNumber;
+
+   return S_OK;
+   }
+
+
+   HRESULT __stdcall PDFiumControl::ResizePDFDocument(long cxImagePixels,long cyImagePixels) {
+
+   if ( ! isPDF )
+      return E_UNEXPECTED;
+
+   if ( szwTemporaryDocumentName[0] )
+      DeleteFile(szwTemporaryDocumentName);
+
+   memset(szwTemporaryDocumentName,0,sizeof(szwTemporaryDocumentName));
+
+   cxPDFWidth = cxImagePixels;
+   cyPDFHeight = cyImagePixels;
+
+   CloseDocument();
+   OpenDocument(szwDocumentName);
+
+   swprintf_s(szwTemporaryDocumentName,MAX_PATH,L"%ls",_wtempnam(NULL,NULL));
+
+   pPDFiumDocument -> GenerateHTML(backgroundColor,cxPDFWidth,cyPDFHeight,szwTemporaryDocumentName);
+
+   BSTR documentToLoad = SysAllocString(szwTemporaryDocumentName);
+
+   VARIANT target,vEmpty;
+
+   VariantInit(&vEmpty);
+   VariantInit(&target);
+
+   target.vt = VT_BSTR;
+   target.bstrVal = L"_self";
+
+   HRESULT rc = pIWebBrowser -> put_AddressBar(VARIANT_TRUE);
+
+   rc = pIWebBrowser -> put_FullScreen(VARIANT_FALSE);
+
+   rc = pIWebBrowser -> Navigate(documentToLoad,&vEmpty,&target,&vEmpty,&vEmpty);
+
+   pIOleInPlaceObject_MSHTML -> SetObjectRects(&rcHTMLHost,&rcHTMLHost);
+
+   pIOleObject_MSHTML -> DoVerb(OLEIVERB_SHOW,NULL,pIOleClientSite_HTML_Host,0,hwndSite,&rcHTMLHost);
+
+   SysFreeString(documentToLoad);
 
    return S_OK;
    }

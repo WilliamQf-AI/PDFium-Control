@@ -101,6 +101,7 @@ library PDFiumControl {
 
       HRESULT Cleanup();
 
+      HRESULT ResizePDFDocument(long cxImagePixels,long cyImagePixels);
    }
 
    //

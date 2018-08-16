@@ -94,6 +94,7 @@
    STDMETHODIMP PDFiumControl::_IOleObject::DoVerb(LONG iVerb, LPMSG pMsg,IOleClientSite *pClientSite, LONG,HWND hwndParent,LPCRECT lprcPosRect) {
 
    switch ( iVerb ) {
+
    case OLEIVERB_PRIMARY:
    case OLEIVERB_OPEN:
       break;
@@ -115,6 +116,9 @@
       break;
  
    case OLEIVERB_INPLACEACTIVATE:
+      if ( ! ( NULL == pIOleClientSite_MySite ) && ( NULL == pIOleInPlaceSite_MySite ) ) 
+         pParent -> InitializeMSHTML();
+         //pIOleClientSite_MySite -> QueryInterface(IID_IOleInPlaceSite,(void **)&pIOleInPlaceSite_MySite);
       pIOleInPlaceObject -> SetObjectRects(lprcPosRect,NULL);
       pIOleInPlaceObject -> InPlaceActivate();
       break;

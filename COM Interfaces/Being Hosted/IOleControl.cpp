@@ -30,7 +30,7 @@
    }
 
    STDMETHODIMP PDFiumControl::_IOleObject::_IOleControl::OnMnemonic(MSG *) {
-   return E_NOTIMPL;
+   return S_FALSE;
    }
 
    STDMETHODIMP PDFiumControl::_IOleObject::_IOleControl::OnAmbientPropertyChange(long propertyId) {

@@ -33,6 +33,8 @@
    }
  
    STDMETHODIMP PDFiumControl::_IOleObject::_IOleInPlaceObject::InPlaceActivate() {
+   if ( NULL == pParent -> pIOleInPlaceSite_MySite )
+      return S_FALSE;
     if ( pParent -> pIOleInPlaceSite_MySite -> CanInPlaceActivate() != S_OK ) 
       return S_FALSE;
    pParent -> pIOleInPlaceSite_MySite -> OnInPlaceActivate();
@@ -43,6 +45,9 @@
 
 //   for ( long k = TIMER_EVENT_MIN_ID; k <= TIMER_EVENT_MAX_ID; k++ )
 //      KillTimer(pParent -> hwndSite,k);
+
+   if ( NULL == pParent -> pIOleInPlaceSite_MySite )
+      return S_FALSE;
 
    pParent -> pIOleInPlaceSite_MySite -> OnInPlaceDeactivate();
 

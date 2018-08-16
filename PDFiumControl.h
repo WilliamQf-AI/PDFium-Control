@@ -132,6 +132,8 @@ extern "C" const GUID __declspec(selectany) IID_IAcroAXDocShim = {0x3b813ce7,0x7
 
       STDMETHOD(Cleanup)();
 
+      STDMETHOD(ResizePDFDocument)(long cx,long cy);
+
    //
    //NTC: 09-21-2017: I don't think there is any reason to expose this interface.
    //
