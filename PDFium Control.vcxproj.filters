@@ -152,9 +152,6 @@
     <ClCompile Include="calcDimensions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\source\utilities.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="COM Interfaces\Being Hosted\handlers.cpp">
       <Filter>Source Files\COM Interfaces\Being Hosted</Filter>
     </ClCompile>
@@ -169,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="COM Interfaces\COM Events\IEnumConnections.cpp">
       <Filter>Source Files\COM Interfaces\COM Events</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GSYSTEM_HOME)\Common\source\utilities.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
